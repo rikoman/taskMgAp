@@ -6,4 +6,6 @@ import lombok.Data;
 public class TaskDTO {
     private String title;
     private Boolean status;
+    private String description;
+    private Integer priority;
 }

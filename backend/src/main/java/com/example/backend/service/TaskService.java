@@ -18,6 +18,8 @@ public class TaskService {
         Task task = Task.builder()
                 .title(dto.getTitle())
                 .status(dto.getStatus())
+                .description(dto.getDescription())
+                .priority(dto.getPriority())
                 .build();
         return taskRepository.save(task);
     }
