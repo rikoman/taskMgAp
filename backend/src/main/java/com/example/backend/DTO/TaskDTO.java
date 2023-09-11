@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class TaskDTO {
     private String title;
-    private Boolean activity;
+    private Boolean status;
 }

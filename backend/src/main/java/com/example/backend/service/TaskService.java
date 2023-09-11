@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -18,7 +17,7 @@ public class TaskService {
     public Task create(TaskDTO dto){
         Task task = Task.builder()
                 .title(dto.getTitle())
-                .activity(dto.getActivity())
+                .status(dto.getStatus())
                 .build();
         return taskRepository.save(task);
     }
