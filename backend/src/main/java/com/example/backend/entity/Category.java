@@ -1,9 +1,6 @@
 package com.example.backend.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,4 +17,7 @@ public class Category {
     private Long id;
     private String title;
     private String description;
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
 }
