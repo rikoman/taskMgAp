@@ -20,6 +20,7 @@ public class UserController {
     public ResponseEntity<User> create(UserDTO dto){
         User user = User.builder()
                 .name(dto.getName())
+                .email(dto.getEmail())
                 .build();
         return new ResponseEntity<>(userService.createUser(dto), HttpStatus.OK);
     }

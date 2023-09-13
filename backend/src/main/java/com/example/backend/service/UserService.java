@@ -17,6 +17,7 @@ public class UserService {
     public User createUser(@RequestBody UserDTO dto){
         User user = User.builder()
                 .name(dto.getName())
+                .email(dto.getEmail())
                 .build();
         return userRepository.save(user);
     }
