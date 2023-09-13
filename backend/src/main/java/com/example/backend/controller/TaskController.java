@@ -12,24 +12,25 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
+@RequestMapping("/task")
 public class TaskController {
     private final TaskService taskService;
     @PostMapping
-    public ResponseEntity<Task> create (@RequestBody TaskDTO dto){
-        return new ResponseEntity<>(taskService.create(dto), HttpStatus.OK);
+    public ResponseEntity<Task> createTask(@RequestBody TaskDTO dto){
+        return new ResponseEntity<>(taskService.createTask(dto), HttpStatus.OK);
     }
     @GetMapping
-    public ResponseEntity<List<Task>> readAll(){
+    public ResponseEntity<List<Task>> readAllTask(){
         return new ResponseEntity<>(taskService.readAllTask(),HttpStatus.OK);
     }
 
     @PutMapping
-    public ResponseEntity<Task> update(@RequestBody Task task){
-        return new ResponseEntity<>(taskService.update(task),HttpStatus.OK);
+    public ResponseEntity<Task> updateTask(@RequestBody Task task){
+        return new ResponseEntity<>(taskService.updateTask(task),HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
-    public HttpStatus delete(@PathVariable Long id){
-        taskService.delete(id);
+    public HttpStatus deleteTask(@PathVariable Long id){
+        taskService.deleteTask(id);
         return HttpStatus.OK;
     }
 }

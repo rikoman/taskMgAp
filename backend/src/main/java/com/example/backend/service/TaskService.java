@@ -14,7 +14,7 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
 
-    public Task create(TaskDTO dto){
+    public Task createTask(TaskDTO dto){
         Task task = Task.builder()
                 .title(dto.getTitle())
                 .status(dto.getStatus())
@@ -28,11 +28,11 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
-    public Task update(Task task){
+    public Task updateTask(Task task){
         return taskRepository.save(task);
     }
 
-    public void delete(Long id){
+    public void deleteTask(Long id){
         taskRepository.deleteById(id);
     }
 }
