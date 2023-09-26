@@ -22,7 +22,8 @@ public class TaskService {
                 .status(dto.getStatus())
                 .description(dto.getDescription())
                 .priority(dto.getPriority())
-                .user(dto.getUser())
+                .project(dto.getProject())
+                .category(dto.getCategory())
                 .date(dto.getDate())
                 .build();
         return taskRepository.save(task);

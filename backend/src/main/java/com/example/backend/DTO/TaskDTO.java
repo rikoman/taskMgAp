@@ -1,6 +1,7 @@
 package com.example.backend.DTO;
 
-import com.example.backend.entity.user.User;
+import com.example.backend.entity.Category;
+import com.example.backend.entity.Project;
 import lombok.Data;
 
 @Data
@@ -9,6 +10,7 @@ public class TaskDTO {
     private Boolean status;
     private String description;
     private Integer priority;
-    private User user;
+    private Project project;
+    private Category category;
     private String date;
 }
