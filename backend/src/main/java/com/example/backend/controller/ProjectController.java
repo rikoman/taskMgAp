@@ -12,27 +12,42 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/project")
+@RequestMapping("/projects")
 public class ProjectController {
+
     private final ProjectService projectService;
+
     @PostMapping
     public ResponseEntity<Project> create (@RequestBody ProjectDTO dto){
-        return new ResponseEntity<>(projectService.createProject(dto), HttpStatus.OK);
+        return mappingResponseProject(projectService.createProject(dto));
     }
 
     @GetMapping
     public ResponseEntity<List<Project>> readAllProject(){
-        return new ResponseEntity<>(projectService.readAllProject(),HttpStatus.OK);
+        return mappingResponseListProject(projectService.readAllProject());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Project> readProjectById(@PathVariable Long id) {
+        return mappingResponseProject(projectService.readProjectById(id));
     }
 
     @PutMapping
     public ResponseEntity<Project> update(@RequestBody Project project){
-        return new ResponseEntity<>(projectService.updateProject(project),HttpStatus.OK);
+        return mappingResponseProject(projectService.updateProject(project));
     }
 
     @DeleteMapping("/{id}")
     public HttpStatus delete(@PathVariable Long id){
         projectService.deleteProject(id);
         return HttpStatus.OK;
+    }
+
+    private ResponseEntity<Project> mappingResponseProject(Project project){
+        return new ResponseEntity<>(project,HttpStatus.OK);
+    }
+
+    private ResponseEntity<List<Project>> mappingResponseListProject(List<Project> project){
+        return new ResponseEntity<>(project,HttpStatus.OK);
     }
 }

@@ -11,19 +11,29 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class ProjectService {
+
     private final ProjectRepository projectRepository;
+    private final UserService userService;
 
     public Project createProject(ProjectDTO dto){
         Project project = Project.builder()
                 .title(dto.getTitle())
-                .status(dto.isStatus())
                 .description(dto.getDescription())
+                .user(userService.readUserById(dto.getUserId()))
                 .build();
         return projectRepository.save(project);
     }
 
     public List<Project> readAllProject(){
         return projectRepository.findAll();
+    }
+
+    public Project readProjectById(Long id){
+        return projectRepository.findById(id).orElseThrow(()->new RuntimeException("Project not found"));
+    }
+
+    public List<Project> readProjectByUserId(Long id){
+        return projectRepository.findByUserId(id);
     }
 
     public Project updateProject(Project project){

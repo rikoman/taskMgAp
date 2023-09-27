@@ -1,5 +1,6 @@
 package com.example.backend.entity;
 
+import com.example.backend.entity.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,10 +14,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Project {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
-    private boolean status;
     private String description;
     @ManyToOne
     @JoinColumn(name = "user_id")
