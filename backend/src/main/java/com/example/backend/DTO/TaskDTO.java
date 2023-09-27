@@ -11,6 +11,7 @@ public class TaskDTO {
     private String description;
     private Integer priority;
     private Project project;
-    private Category category;
+    private Long categoryId;
     private String date;
+    private Long parendId;
 }

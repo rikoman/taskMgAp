@@ -8,7 +8,12 @@ import java.util.List;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task,Long> {
+
     List<Task> findByStatusTrue();
+
     List<Task> findByStatusTrueAndPriority(Integer id);
+
     List<Task> findByDateAndStatusTrue(String date);
+
+    List<Task> findByCategoryId(Long id);
 }

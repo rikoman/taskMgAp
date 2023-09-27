@@ -15,6 +15,7 @@ import java.util.List;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final CategoryService categoryService;
 
     public Task createTask(TaskDTO dto){
         Task task = Task.builder()
@@ -23,8 +24,9 @@ public class TaskService {
                 .description(dto.getDescription())
                 .priority(dto.getPriority())
                 .project(dto.getProject())
-                .category(dto.getCategory())
+                .category(categoryService.readCategoryById(dto.getCategoryId()))
                 .date(dto.getDate())
+                .parent(readTaskById(dto.getParendId()))
                 .build();
         return taskRepository.save(task);
     }
@@ -50,6 +52,14 @@ public class TaskService {
     }
     public List<Task> readTasksByDateAdnStatusTrue(String date){
         return taskRepository.findByDateAndStatusTrue(date);
+    }
+
+    public Task readTaskById(Long id){
+        return taskRepository.findById(id).orElseThrow(()-> new RuntimeException("Task not found"));
+    }
+
+    public List<Task> readProductByCategoryId(Long id){
+        return taskRepository.findByCategoryId(id);
     }
 
     public Task updateTask(Task task){

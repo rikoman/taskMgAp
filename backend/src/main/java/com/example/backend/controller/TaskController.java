@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/task")
+@RequestMapping("/tasks")
 public class TaskController {
 
     private final TaskService taskService;
@@ -24,47 +24,64 @@ public class TaskController {
         if(dto.getDate()== null){
             dto.setDate(String.valueOf(LocalDate.now()));
         }
-        return new ResponseEntity<>(taskService.createTask(dto), HttpStatus.OK);
+        return mappingResponseTask(taskService.createTask(dto));
     }
 
     @GetMapping
     public ResponseEntity<List<Task>> readAllTask(){
-        return new ResponseEntity<>(taskService.readAllTask(),HttpStatus.OK);
+        return mappingResponseListTask(taskService.readAllTask());
     }
 
     @GetMapping("/true")
     public ResponseEntity<List<Task>> readAllTaskByStatusTrue(){
-        return new ResponseEntity<>(taskService.readAllTaskByStatusTrue(),HttpStatus.OK);
+        return mappingResponseListTask(taskService.readAllTaskByStatusTrue());
     }
 
     @GetMapping("/priority/{id}")
     public ResponseEntity<List<Task>> readAllTaskByStatusTrueAndByPriority(@PathVariable Integer id){
-        return new ResponseEntity<>(taskService.readAllTaskByStatusTrueAndByPriority(id),HttpStatus.OK);
+        return mappingResponseListTask(taskService.readAllTaskByStatusTrueAndByPriority(id));
     }
 
     @GetMapping("/sort")
     public ResponseEntity<List<Task>> readAllSortTaskByStatusTrueAndByPriority(){
-        return new ResponseEntity<>(taskService.readAllSortTaskByStatusTrueAndByPriority(),HttpStatus.OK);
+        return mappingResponseListTask(taskService.readAllSortTaskByStatusTrueAndByPriority());
     }
 
     @GetMapping("/today")
     public ResponseEntity<List<Task>> readTasksToday(){
-
-        return new ResponseEntity<>(taskService.readTasksByDateTodayAndStatusTrue(), HttpStatus.OK);
+        return mappingResponseListTask(taskService.readTasksByDateTodayAndStatusTrue());
     }
     @GetMapping("/{date}")
     public ResponseEntity<List<Task>> readTasksByDate(@PathVariable String date){
-        return new ResponseEntity<>(taskService.readTasksByDateAdnStatusTrue(date), HttpStatus.OK);
+        return mappingResponseListTask(taskService.readTasksByDateAdnStatusTrue(date));
+    }
+
+    @GetMapping("/date/{id}")
+    public ResponseEntity<Task> readTaskById(@PathVariable Long id){
+        return mappingResponseTask(taskService.readTaskById(id));
+    }
+
+    @GetMapping("/category/{id}")
+    public ResponseEntity<List<Task>> readProductByCategoryId(@PathVariable Long id){
+        return mappingResponseListTask(taskService.readProductByCategoryId(id));
     }
 
     @PutMapping
     public ResponseEntity<Task> updateTask(@RequestBody Task task){
-        return new ResponseEntity<>(taskService.updateTask(task),HttpStatus.OK);
+        return mappingResponseTask(taskService.updateTask(task));
     }
 
     @DeleteMapping("/{id}")
     public HttpStatus deleteTask(@PathVariable Long id){
         taskService.deleteTask(id);
         return HttpStatus.OK;
+    }
+
+    private ResponseEntity<Task> mappingResponseTask(Task task){
+        return new ResponseEntity<>(task,HttpStatus.OK);
+    }
+
+    private ResponseEntity<List<Task>> mappingResponseListTask(List<Task> task){
+        return new ResponseEntity<>(task,HttpStatus.OK);
     }
 }

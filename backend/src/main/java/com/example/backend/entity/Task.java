@@ -10,7 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 public class Task {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private Boolean status;
@@ -23,4 +23,7 @@ public class Task {
     @JoinColumn(name = "category_id")
     private Category category;
     private String date;
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Task parent;
 }
