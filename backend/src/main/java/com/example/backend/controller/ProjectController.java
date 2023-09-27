@@ -27,7 +27,7 @@ public class ProjectController {
         return mappingResponseListProject(projectService.readAllProject());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/data/{id}")
     public ResponseEntity<Project> readProjectById(@PathVariable Long id) {
         return mappingResponseProject(projectService.readProjectById(id));
     }

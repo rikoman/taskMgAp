@@ -56,7 +56,7 @@ public class TaskController {
         return mappingResponseListTask(taskService.readTasksByDateAdnStatusTrue(date));
     }
 
-    @GetMapping("/date/{id}")
+    @GetMapping("/data/{id}")
     public ResponseEntity<Task> readTaskById(@PathVariable Long id){
         return mappingResponseTask(taskService.readTaskById(id));
     }
