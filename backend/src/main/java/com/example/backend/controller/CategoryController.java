@@ -12,28 +12,46 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/category")
+@RequestMapping("/categories")
 public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping
-    public ResponseEntity<Category> create(CategoryDTO dto){
-        return new ResponseEntity<>(categoryService.createCategory(dto), HttpStatus.OK);
+    public ResponseEntity<Category> createCategory(@RequestBody CategoryDTO dto){
+        return mappingResponseCategory(categoryService.createCategory(dto));
     }
 
     @GetMapping
-    public ResponseEntity<List<Category>> readAll(){
-        return new ResponseEntity<>(categoryService.readAllCategory(),HttpStatus.OK);
+    public ResponseEntity<List<Category>> readAllCategory(){
+        return mappingResponseListCategory(categoryService.readAllCategory());
+    }
+
+    @GetMapping("/data/{id}")
+    public ResponseEntity<Category> readById(@PathVariable Long id){
+        return mappingResponseCategory(categoryService.readCategoryById(id));
+    }
+
+    @GetMapping("/project/{id}")
+    public ResponseEntity<List<Category>> readCategoryByProjectId(@PathVariable Long id){
+        return mappingResponseListCategory(categoryService.readCategoryByProjectId(id));
     }
 
     @PutMapping
-    public ResponseEntity<Category> update(Category category){
-        return new ResponseEntity<>(categoryService.updateCategory(category),HttpStatus.OK);
+    public ResponseEntity<Category> updateCategory(Category category){
+        return mappingResponseCategory(categoryService.updateCategory(category));
     }
 
     @DeleteMapping("/{id}")
-    public HttpStatus delete(@PathVariable Long id){
+    public HttpStatus deleteCategory(@PathVariable Long id){
         categoryService.deleteCategory(id);
         return HttpStatus.OK;
+    }
+
+    private ResponseEntity<Category> mappingResponseCategory(Category category){
+        return new ResponseEntity<>(category,HttpStatus.OK);
+    }
+
+    private ResponseEntity<List<Category>> mappingResponseListCategory(List<Category> category){
+        return new ResponseEntity<>(category,HttpStatus.OK);
     }
 }
