@@ -1,6 +1,6 @@
 package com.example.backend.security.service;
 
-import com.example.backend.entity.user.User;
+import com.example.backend.story.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
