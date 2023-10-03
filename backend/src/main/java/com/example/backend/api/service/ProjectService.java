@@ -1,6 +1,8 @@
 package com.example.backend.api.service;
 
 import com.example.backend.api.DTO.ProjectDTO;
+import com.example.backend.api.exception.BadRequestException;
+import com.example.backend.api.exception.NotFoundException;
 import com.example.backend.story.entity.Project;
 import com.example.backend.story.repository.ProjectRepository;
 import lombok.AllArgsConstructor;
@@ -16,6 +18,9 @@ public class ProjectService {
     private final UserService userService;
 
     public Project createProject(ProjectDTO dto){
+        if(dto.getTitle() == null || dto.getUserId() == null ){
+            throw new BadRequestException("Invalid request");
+        }
         Project project = Project.builder()
                 .title(dto.getTitle())
                 .description(dto.getDescription())
@@ -29,18 +34,23 @@ public class ProjectService {
     }
 
     public Project readProjectById(Long id){
-        return projectRepository.findById(id).orElseThrow(()->new RuntimeException("Project not found"));
+        return projectRepository.findById(id).orElseThrow(()->new NotFoundException(String.format("Project with %s id doesn' exist.",id)));
     }
 
     public List<Project> readAllProjectByUserId(Long id){
+        userService.readUserById(id);
         return projectRepository.findByUserId(id);
     }
 
     public Project updateProject(Project project){
+        if(project.getId() == null || project.getTitle() == null || project.getUser() == null ){
+            throw new BadRequestException("Invalid request");
+        }
         return projectRepository.save(project);
     }
 
     public void deleteProject(Long id){
+        readProjectById(id);
         projectRepository.deleteById(id);
     }
 }

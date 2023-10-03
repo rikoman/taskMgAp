@@ -1,6 +1,8 @@
 package com.example.backend.api.service;
 
 import com.example.backend.api.DTO.TaskDTO;
+import com.example.backend.api.exception.BadRequestException;
+import com.example.backend.api.exception.NotFoundException;
 import com.example.backend.story.entity.Category;
 import com.example.backend.story.entity.Project;
 import com.example.backend.story.entity.Task;
@@ -21,6 +23,9 @@ public class TaskService {
     private final ProjectService projectService;
 
     public Task createTask(TaskDTO dto){
+        if(dto.getTitle()==null || dto.getStatus()==null || dto.getCategoryId() == null && dto.getParentId() == null && dto.getProjectId() == null){
+            throw new BadRequestException("Invalid request");
+        }
 
         Category category = dto.getCategoryId() != null ? categoryService.readCategoryById(dto.getCategoryId()) : null;
         Project project = dto.getProjectId() != null ? projectService.readProjectById(dto.getProjectId()) : null;
@@ -63,20 +68,28 @@ public class TaskService {
     }
 
     public Task readTaskById(Long id){
-        return taskRepository.findById(id).orElseThrow(()-> new RuntimeException("Task not found"));
+        return taskRepository.findById(id).orElseThrow(()-> new NotFoundException(String.format("task with %s id doesn' found",id)));
     }
 
     public List<Task> readAllTaskByCategoryId(Long id){
+        categoryService.readCategoryById(id);
         return taskRepository.findByCategoryId(id);
     }
 
-    public List<Task> readAllTaskByProjectId(Long id) { return taskRepository.findByProjectId(id);}
+    public List<Task> readAllTaskByProjectId(Long id) {
+        projectService.readProjectById(id);
+        return taskRepository.findByProjectId(id);
+    }
 
     public Task updateTask(Task task){
+        if(task.getId() == null || task.getTitle() == null || task.getStatus() == null || task.getCategory() == null && task.getParent() == null && task.getProject() == null) {
+            throw new BadRequestException("Invalid request");
+        }
         return taskRepository.save(task);
     }
 
     public void deleteTask(Long id){
+        readTaskById(id);
         taskRepository.deleteById(id);
     }
 }
