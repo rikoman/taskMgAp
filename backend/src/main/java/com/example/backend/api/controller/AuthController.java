@@ -1,8 +1,13 @@
 package com.example.backend.api.controller;
 
+import com.example.backend.api.DTO.CategoryDTO;
+import com.example.backend.api.service.CategoryService;
+import com.example.backend.api.service.UserService;
+import com.example.backend.story.entity.Project;
 import com.example.backend.story.entity.user.ERole;
 import com.example.backend.story.entity.user.Role;
 import com.example.backend.story.entity.user.User;
+import com.example.backend.story.repository.ProjectRepository;
 import com.example.backend.story.repository.RoleRepository;
 import com.example.backend.story.repository.UserRepository;
 import com.example.backend.security.config.jwt.JwtUtils;
@@ -44,6 +49,15 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
+    @Autowired
+    CategoryService categoryService;
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    ProjectRepository projectRepository;
+
     @PostMapping("/signin")
     public ResponseEntity<?> authUser(@RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager
@@ -62,6 +76,7 @@ public class AuthController {
         return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
+                userDetails.getEmail(),
                 roles));
     }
 
@@ -73,7 +88,7 @@ public class AuthController {
                     .body(new MessageResponse("Error: Username is exist"));
         }
 
-        User user = new User(signupRequest.getUsername(),passwordEncoder.encode(signupRequest.getPassword()));
+        User user = new User(signupRequest.getUsername(),passwordEncoder.encode(signupRequest.getPassword()),signupRequest.getEmail());
 
         Set<String> reqRoles = signupRequest.getRoles();
         Set<Role> roles = new HashSet<>();
@@ -112,6 +127,42 @@ public class AuthController {
 
         user.setRoles(roles);
         userRespository.save(user);
+        createDefaultProjectAndCategories(user.getId());
         return ResponseEntity.ok(new MessageResponse("User CREATED"));
+    }
+
+    private void createDefaultProjectAndCategories(Long id){
+        Project project = Project.builder()
+                .title("Входящие")
+                .description("Здесь отображаются простые задачи")
+                .user(userService.readUserById(id))
+                .build();
+
+        projectRepository.save(project);
+        createCategory(project.getId());
+    }
+
+    private void createCategory(Long id){
+        CategoryDTO categoryToDay = CategoryDTO.builder()
+                .title("Задачи на сегодня")
+                .description("В данной категории будут отобразаться задачи предназначенные на текущую дату")
+                .projectId(id)
+                .build();
+
+        CategoryDTO categoryFuture = CategoryDTO.builder()
+                .title("Задачи на будущее")
+                .description("В данной категории будут отобразаться задачи предназначенные на будущую дату")
+                .projectId(id)
+                .build();
+
+        CategoryDTO categoryOverDue = CategoryDTO.builder()
+                .title("Задачи на прошедшие дни")
+                .description("В данной категории будут отобразаться задачи прошедших дней")
+                .projectId(id)
+                .build();
+
+        categoryService.createCategory(categoryToDay);
+        categoryService.createCategory(categoryFuture);
+        categoryService.createCategory(categoryOverDue);
     }
 }
