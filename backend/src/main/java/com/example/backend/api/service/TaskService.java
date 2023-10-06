@@ -48,24 +48,7 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
-    public List<Task> readAllTaskByStatusTrue(){return taskRepository.findByStatusTrue();}
-
-    public List<Task> readAllTaskByStatusTrueAndByPriority(Integer id){
-        return taskRepository.findByStatusTrueAndPriority(id);
-    }
-
-    public List<Task> readAllSortTaskByStatusTrueAndByPriority(){
-        List<Task> sortTasks = taskRepository.findByStatusTrue();
-        sortTasks.sort(Comparator.comparing(Task::getPriority));
-        return sortTasks;
-    }
-
-    public List<Task> readTasksByDateTodayAndStatusTrue(){
-        return taskRepository.findByDateAndStatusTrue(String.valueOf(LocalDate.now()));
-    }
-    public List<Task> readTasksByDateAdnStatusTrue(String date){
-        return taskRepository.findByDateAndStatusTrue(date);
-    }
+    public List<Task> readAllTaskByStatusFalse(){return taskRepository.findByStatusFalse();}
 
     public Task readTaskById(Long id){
         return taskRepository.findById(id).orElseThrow(()-> new NotFoundException(String.format("task with %s id doesn' found",id)));
@@ -73,12 +56,12 @@ public class TaskService {
 
     public List<Task> readAllTaskByCategoryId(Long id){
         categoryService.readCategoryById(id);
-        return taskRepository.findByCategoryId(id);
+        return sortingListTask(taskRepository.findByCategoryIdAndStatusTrue(id));
     }
 
     public List<Task> readAllTaskByProjectId(Long id) {
         projectService.readProjectById(id);
-        return taskRepository.findByProjectId(id);
+        return sortingListTask(taskRepository.findByProjectIdAndStatusTrue(id));
     }
 
     public Task updateTask(Task task){
@@ -91,5 +74,10 @@ public class TaskService {
     public void deleteTask(Long id){
         readTaskById(id);
         taskRepository.deleteById(id);
+    }
+
+    private List<Task> sortingListTask(List<Task> tasks){
+        tasks.sort(Comparator.comparing(Task::getPriority));
+        return tasks;
     }
 }

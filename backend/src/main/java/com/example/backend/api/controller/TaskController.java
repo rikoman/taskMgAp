@@ -32,28 +32,9 @@ public class TaskController {
         return mappingResponseListTask(taskService.readAllTask());
     }
 
-    @GetMapping("/true")
-    public ResponseEntity<List<Task>> readAllTaskByStatusTrue(){
-        return mappingResponseListTask(taskService.readAllTaskByStatusTrue());
-    }
-
-    @GetMapping("/priority/{id}")
-    public ResponseEntity<List<Task>> readAllTaskByStatusTrueAndByPriority(@PathVariable Integer id){
-        return mappingResponseListTask(taskService.readAllTaskByStatusTrueAndByPriority(id));
-    }
-
-    @GetMapping("/sort")
-    public ResponseEntity<List<Task>> readAllSortTaskByStatusTrueAndByPriority(){
-        return mappingResponseListTask(taskService.readAllSortTaskByStatusTrueAndByPriority());
-    }
-
-    @GetMapping("/today")
-    public ResponseEntity<List<Task>> readTasksToday(){
-        return mappingResponseListTask(taskService.readTasksByDateTodayAndStatusTrue());
-    }
-    @GetMapping("/{date}")
-    public ResponseEntity<List<Task>> readTasksByDate(@PathVariable String date){
-        return mappingResponseListTask(taskService.readTasksByDateAdnStatusTrue(date));
+    @GetMapping("/false")
+    public ResponseEntity<List<Task>> readAllTaskByStatusFalse(){
+        return mappingResponseListTask(taskService.readAllTaskByStatusFalse());
     }
 
     @GetMapping("/data/{id}")
