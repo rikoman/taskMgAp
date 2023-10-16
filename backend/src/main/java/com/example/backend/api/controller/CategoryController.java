@@ -14,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("/categories")
 public class CategoryController {
+
     private final CategoryService categoryService;
 
     @PostMapping
@@ -34,6 +35,11 @@ public class CategoryController {
     @GetMapping("/project/{id}")
     public ResponseEntity<List<Category>> readAllCategoryByProjectId(@PathVariable Long id){
         return mappingResponseListCategory(categoryService.readAllCategoryByProjectId(id));
+    }
+
+    @GetMapping("/corporateProject/{id}")
+    public ResponseEntity<List<Category>> readAllCategoryByCorporateProjectId(@PathVariable Long id){
+        return mappingResponseListCategory(categoryService.readAllCategoryByCorporateProjectId(id));
     }
 
     @PutMapping

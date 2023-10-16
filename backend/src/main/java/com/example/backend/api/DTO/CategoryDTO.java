@@ -13,4 +13,5 @@ public class CategoryDTO {
     private String title;
     private String description;
     private Long projectId;
+    private Long corporateProjectId;
 }

@@ -27,4 +27,8 @@ public class Category implements Serializable {
     @JoinColumn(name = "project_id")
     @JsonIdentityReference(alwaysAsId = true)
     private Project project;
+    @ManyToOne
+    @JoinColumn(name = "corporateProject_id")
+    @JsonIdentityReference(alwaysAsId = true)
+    private CorporateProject corporateProject;
 }
