@@ -1,5 +1,6 @@
 package com.example.backend.story.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -10,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -34,4 +36,6 @@ public class Comment implements Serializable {
     @JoinColumn(name = "category_id")
     @JsonIdentityReference(alwaysAsId = true)
     private Category category;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime datePublication;
 }

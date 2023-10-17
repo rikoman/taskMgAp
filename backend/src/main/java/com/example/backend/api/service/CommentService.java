@@ -14,6 +14,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -41,6 +42,7 @@ public class CommentService {
                 .task(task)
                 .category(category)
                 .project(project)
+                .datePublication(LocalDateTime.now())
                 .build();
         return repository.save(comment);
     }
