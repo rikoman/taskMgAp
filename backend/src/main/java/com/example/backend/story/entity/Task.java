@@ -1,5 +1,6 @@
 package com.example.backend.story.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -30,9 +32,10 @@ public class Task implements Serializable {
     @JoinColumn(name = "category_id")
     @JsonIdentityReference(alwaysAsId = true)
     private Category category;
-    private String date;
     @ManyToOne
     @JoinColumn(name = "parent_id")
     @JsonIdentityReference(alwaysAsId = true)
     private Task parent;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate dateCreate;
 }

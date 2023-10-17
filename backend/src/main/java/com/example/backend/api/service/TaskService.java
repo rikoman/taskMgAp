@@ -13,6 +13,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 
@@ -30,6 +31,10 @@ public class TaskService {
             throw new BadRequestException("Invalid request");
         }
 
+        if(dto.getDateCreate()== null){
+            dto.setDateCreate(LocalDate.now());
+        }
+
         Category category = dto.getCategoryId() != null ? categoryService.readCategoryById(dto.getCategoryId()) : null;
         Project project = dto.getProjectId() != null ? projectService.readProjectById(dto.getProjectId()) : null;
         Task parentTask = dto.getParentId() != null ? readTaskById(dto.getParentId()) : null;
@@ -41,7 +46,7 @@ public class TaskService {
                 .priority(dto.getPriority())
                 .project(project)
                 .category(category)
-                .date(dto.getDate())
+                .dateCreate(dto.getDateCreate())
                 .parent(parentTask)
                 .build();
         return taskRepository.save(task);

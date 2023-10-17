@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -21,9 +20,6 @@ public class TaskController {
 
     @PostMapping
     public ResponseEntity<Task> createTask(@RequestBody TaskDTO dto) throws ParseException {
-        if(dto.getDate()== null){
-            dto.setDate(String.valueOf(LocalDate.now()));
-        }
         return mappingResponseTask(taskService.createTask(dto));
     }
 

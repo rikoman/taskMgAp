@@ -3,6 +3,8 @@ package com.example.backend.story.DTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @NoArgsConstructor
 public class TaskDTO {
@@ -12,6 +14,6 @@ public class TaskDTO {
     private Integer priority;
     private Long projectId;
     private Long categoryId;
-    private String date;
     private Long parentId;
+    private LocalDate dateCreate;
 }
