@@ -1,6 +1,6 @@
 package com.example.backend.api.controller;
 
-import com.example.backend.api.DTO.CommentDTO;
+import com.example.backend.story.DTO.CommentDTO;
 import com.example.backend.api.service.CommentService;
 import com.example.backend.story.entity.Comment;
 import lombok.AllArgsConstructor;

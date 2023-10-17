@@ -1,6 +1,6 @@
 package com.example.backend.api.controller;
 
-import com.example.backend.api.DTO.CategoryDTO;
+import com.example.backend.story.DTO.CategoryDTO;
 import com.example.backend.api.service.CategoryService;
 import com.example.backend.api.service.UserService;
 import com.example.backend.story.entity.Project;
@@ -25,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -135,7 +136,7 @@ public class AuthController {
         Project project = Project.builder()
                 .title("Входящие")
                 .description("Здесь отображаются простые задачи")
-                .user(userService.readUserById(id))
+                .users(userService.readAllUserByIds(Collections.singletonList(id)))
                 .build();
 
         projectRepository.save(project);

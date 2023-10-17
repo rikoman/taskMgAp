@@ -1,6 +1,6 @@
 package com.example.backend.api.controller;
 
-import com.example.backend.api.DTO.TaskDTO;
+import com.example.backend.story.DTO.TaskDTO;
 import com.example.backend.story.entity.Task;
 import com.example.backend.api.service.TaskService;
 import lombok.AllArgsConstructor;

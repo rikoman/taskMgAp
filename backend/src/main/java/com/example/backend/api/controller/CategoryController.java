@@ -1,6 +1,6 @@
 package com.example.backend.api.controller;
 
-import com.example.backend.api.DTO.CategoryDTO;
+import com.example.backend.story.DTO.CategoryDTO;
 import com.example.backend.story.entity.Category;
 import com.example.backend.api.service.CategoryService;
 import lombok.AllArgsConstructor;

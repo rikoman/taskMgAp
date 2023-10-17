@@ -1,6 +1,6 @@
 package com.example.backend.api.controller;
 
-import com.example.backend.api.DTO.ProjectDTO;
+import com.example.backend.story.DTO.ProjectDTO;
 import com.example.backend.story.entity.Project;
 import com.example.backend.api.service.ProjectService;
 import lombok.AllArgsConstructor;
@@ -18,7 +18,7 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @PostMapping
-    public ResponseEntity<Project> create (@RequestBody ProjectDTO dto){
+    public ResponseEntity<Project> create(@RequestBody ProjectDTO dto){
         return mappingResponseProject(projectService.createProject(dto));
     }
 

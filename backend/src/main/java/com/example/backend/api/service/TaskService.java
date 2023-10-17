@@ -1,6 +1,6 @@
 package com.example.backend.api.service;
 
-import com.example.backend.api.DTO.TaskDTO;
+import com.example.backend.story.DTO.TaskDTO;
 import com.example.backend.api.exception.BadRequestException;
 import com.example.backend.api.exception.NotFoundException;
 import com.example.backend.story.entity.Category;
