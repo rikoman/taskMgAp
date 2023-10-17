@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Data
@@ -18,14 +19,14 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class Project implements Serializable {
+public class Project implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String title;
     private String description;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "users_id")
     @JsonIdentityReference(alwaysAsId = true)
-    private User user;
+    private List<User> users;
 }

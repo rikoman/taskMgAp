@@ -6,6 +6,8 @@ import com.example.backend.story.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class UserService {
@@ -14,5 +16,9 @@ public class UserService {
 
     public User readUserById(Long id){
         return userRepository.findById(id).orElseThrow(()->new NotFoundException(String.format("User with %s id doesn' exist.",id)));
+    }
+
+    public List<User> readAllUserByIds(List<Long> userIds){
+        return userRepository.findAllById(userIds);
     }
 }

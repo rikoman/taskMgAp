@@ -1,12 +1,14 @@
-package com.example.backend.api.DTO;
+package com.example.backend.story.DTO;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 public class ProjectDTO {
     private String title;
     private String description;
-    private Long userId;
+    private List<Long> usersId;
 }

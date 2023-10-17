@@ -1,6 +1,6 @@
 package com.example.backend.api.service;
 
-import com.example.backend.api.DTO.ProjectDTO;
+import com.example.backend.story.DTO.ProjectDTO;
 import com.example.backend.api.exception.BadRequestException;
 import com.example.backend.api.exception.NotFoundException;
 import com.example.backend.story.entity.Project;
@@ -22,13 +22,13 @@ public class ProjectService {
 
     @CacheEvict(cacheNames = "projects", allEntries = true)
     public Project createProject(ProjectDTO dto){
-        if(dto.getTitle() == null || dto.getUserId() == null ){
+        if(dto.getTitle() == null || dto.getUsersId() == null ){
             throw new BadRequestException("Invalid request");
         }
         Project project = Project.builder()
                 .title(dto.getTitle())
                 .description(dto.getDescription())
-                .user(userService.readUserById(dto.getUserId()))
+                .users(userService.readAllUserByIds(dto.getUsersId()))
                 .build();
         return projectRepository.save(project);
     }
@@ -46,12 +46,12 @@ public class ProjectService {
     @Cacheable(cacheNames = "projectsByUserId", key = "#id")
     public List<Project> readAllProjectByUserId(Long id){
         userService.readUserById(id);
-        return projectRepository.findByUserId(id);
+        return projectRepository.findByUsersId(id);
     }
 
     @CacheEvict(cacheNames = "projects", allEntries = true)
     public Project updateProject(Project project){
-        if(project.getId() == null || project.getTitle() == null || project.getUser() == null ){
+        if(project.getId() == null || project.getTitle() == null || project.getUsers() == null ){
             throw new BadRequestException("Invalid request");
         }
         return projectRepository.save(project);
