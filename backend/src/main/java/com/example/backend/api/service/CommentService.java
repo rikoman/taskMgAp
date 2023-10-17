@@ -27,7 +27,7 @@ public class CommentService {
     private final CategoryService categoryService;
     private final TaskService taskService;
 
-    @CacheEvict(cacheNames = "comments", allEntries = true)
+    @CacheEvict(cacheNames = {"comments", "commentsByProjectId", "commentsByCategoryId", "commentsByTaskId"}, allEntries = true)
     public Comment createComment(CommentDTO dto){
         if(dto.getContent()==null || dto.getCategoryId() == null && dto.getProjectId() == null && dto.getTaskId() == null){
             throw new BadRequestException("Invalid request");
@@ -70,7 +70,8 @@ public class CommentService {
         return repository.findByTaskId(id);
     }
 
-    @CacheEvict(cacheNames = "comments", allEntries = true)
+    @Caching(evict = { @CacheEvict(cacheNames = "comment", key = "#comment.id"),
+                       @CacheEvict(cacheNames = {"comments", "commentsByProjectId", "commentsByCategoryId", "commentsByTaskId"}, allEntries = true) })
     public Comment updateComment(Comment comment){
         if(comment.getId() == null || comment.getContent() == null || comment.getCategory() == null && comment.getProject() == null && comment.getTask() == null) {
             throw new BadRequestException("Invalid request");

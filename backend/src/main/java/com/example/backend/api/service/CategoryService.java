@@ -20,7 +20,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final ProjectService projectService;
 
-    @CacheEvict(cacheNames = "categories",allEntries = true)
+    @CacheEvict(cacheNames = {"categories", "categoriesByProjectId"}, allEntries = true)
     public Category createCategory(CategoryDTO dto){
         if(dto.getTitle() == null || dto.getProjectId() == null) throw new BadRequestException("Invalid request");
 
@@ -48,7 +48,8 @@ public class CategoryService {
         return categoryRepository.findByProjectId(id);
     }
 
-    @CacheEvict(cacheNames = "categories",allEntries = true)
+    @Caching(evict = { @CacheEvict(cacheNames = "category", key = "#category.id"),
+                       @CacheEvict(cacheNames = {"categories", "categoriesByProjectId"}, allEntries = true)})
     public Category updateCategory(Category category){
         if(category.getId() == null || category.getTitle() == null || category.getProject() == null) throw new BadRequestException("Invalid request");
         return categoryRepository.save(category);

@@ -25,7 +25,7 @@ public class TaskService {
     private final CategoryService categoryService;
     private final ProjectService projectService;
 
-    @CacheEvict(cacheNames = "tasks", allEntries = true)
+    @CacheEvict(cacheNames = {"tasks", "tasksByStatusFalse", "tasksByProjectId", "taskByCategoryId" }, allEntries = true)
     public Task createTask(TaskDTO dto){
         if(dto.getTitle()==null || dto.getStatus()==null || dto.getCategoryId() == null && dto.getParentId() == null && dto.getProjectId() == null){
             throw new BadRequestException("Invalid request");
@@ -77,7 +77,8 @@ public class TaskService {
         return sortingListTask(taskRepository.findByProjectIdAndStatusTrue(id));
     }
 
-    @CacheEvict(cacheNames = "tasks", allEntries = true)
+    @Caching(evict = { @CacheEvict(cacheNames = "task", key = "#task.id"),
+                       @CacheEvict(cacheNames = {"tasks", "tasksByStatusFalse", "tasksByProjectId", "taskByCategoryId" }, allEntries = true)})
     public Task updateTask(Task task){
         if(task.getId() == null || task.getTitle() == null || task.getStatus() == null || task.getCategory() == null && task.getParent() == null && task.getProject() == null) {
             throw new BadRequestException("Invalid request");

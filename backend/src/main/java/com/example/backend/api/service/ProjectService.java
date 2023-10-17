@@ -20,7 +20,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserService userService;
 
-    @CacheEvict(cacheNames = "projects", allEntries = true)
+    @CacheEvict(cacheNames = {"projects", "projectsByUserId"}, allEntries = true)
     public Project createProject(ProjectDTO dto){
         if(dto.getTitle() == null || dto.getUsersId() == null ){
             throw new BadRequestException("Invalid request");
@@ -49,13 +49,15 @@ public class ProjectService {
         return projectRepository.findByUsersId(id);
     }
 
-    @CacheEvict(cacheNames = "projects", allEntries = true)
+    @Caching(evict = { @CacheEvict(cacheNames = "project", key = "#project.id"),
+                       @CacheEvict(cacheNames = {"projects", "projectsByUserId"}, allEntries = true)})
     public Project updateProject(Project project){
         if(project.getId() == null || project.getTitle() == null || project.getUsers() == null ){
             throw new BadRequestException("Invalid request");
         }
         return projectRepository.save(project);
     }
+
     @Caching(evict = { @CacheEvict(cacheNames = "project", key = "#id"),
                        @CacheEvict(cacheNames = {"projects", "projectsByUserId"}, allEntries = true)})
     public void deleteProject(Long id){
