@@ -4,6 +4,7 @@ import com.example.backend.story.DTO.ProjectDTO;
 import com.example.backend.api.exception.BadRequestException;
 import com.example.backend.api.exception.NotFoundException;
 import com.example.backend.story.entity.Project;
+import com.example.backend.story.entity.user.User;
 import com.example.backend.story.repository.ProjectRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -40,7 +41,7 @@ public class ProjectService {
 
     @Cacheable(cacheNames = "project", key = "#id")
     public Project readProjectById(Long id){
-        return projectRepository.findById(id).orElseThrow(()->new NotFoundException(String.format("Project with %s id doesn' exist.",id)));
+        return projectRepository.findById(id).orElseThrow(()->new NotFoundException(String.format("Project with /%s/ id doesn' exist.",id)));
     }
 
     @Cacheable(cacheNames = "projectsByUserId", key = "#id")
@@ -56,6 +57,27 @@ public class ProjectService {
             throw new BadRequestException("Invalid request");
         }
         return projectRepository.save(project);
+    }
+
+    @Caching(evict = { @CacheEvict(cacheNames = "project", key = "#project.id"),
+            @CacheEvict(cacheNames = {"projects", "projectsByUserId"}, allEntries = true)})
+    public Project updatePartInfoForProject(Project project){
+        Project existProject = readProjectById(project.getId());
+        List<User> newUsers = existProject.getUsers();
+
+        if(project.getTitle()!= null){
+            existProject.setTitle(project.getTitle());
+        }
+
+        if(project.getDescription()!=null){
+            existProject.setDescription(project.getDescription());
+        }
+
+        if(project.getUsers()!=null){
+            newUsers.addAll(project.getUsers());
+            existProject.setUsers(newUsers);
+        }
+        return projectRepository.save(existProject);
     }
 
     @Caching(evict = { @CacheEvict(cacheNames = "project", key = "#id"),

@@ -47,6 +47,11 @@ public class CommentController {
         return mappingResponseComment(service.updateComment(comment));
     }
 
+    @PatchMapping
+    public ResponseEntity<Comment> updatePartInfo(@RequestBody Comment comment){
+        return mappingResponseComment(service.updatePartInfoForComment(comment));
+    }
+
     @DeleteMapping("/{id}")
     public HttpStatus deleteComment(@PathVariable Long id){
         service.deleteComment(id);

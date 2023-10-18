@@ -39,7 +39,7 @@ public class CategoryService {
 
     @Cacheable(cacheNames = "category", key = "#id")
     public Category readCategoryById(Long id){
-        return categoryRepository.findById(id).orElseThrow(()->new NotFoundException(String.format("Category with %s id doesn' found",id)));
+        return categoryRepository.findById(id).orElseThrow(()->new NotFoundException(String.format("Category with /%s/ id doesn' found",id)));
     }
 
     @Cacheable(cacheNames = "categoriesByProjectId",key = "#id")
@@ -53,6 +53,27 @@ public class CategoryService {
     public Category updateCategory(Category category){
         if(category.getId() == null || category.getTitle() == null || category.getProject() == null) throw new BadRequestException("Invalid request");
         return categoryRepository.save(category);
+    }
+
+    @Caching(evict = { @CacheEvict(cacheNames = "category", key = "#category.id"),
+            @CacheEvict(cacheNames = {"categories", "categoriesByProjectId"}, allEntries = true)})
+    public Category updatePartInfoForCategory(Category category){
+        Category existCategory = readCategoryById(category.getId());
+
+        if(category.getTitle() != null){
+            existCategory.setTitle(category.getTitle());
+        }
+
+        if(category.getDescription() != null){
+            existCategory.setDescription(category.getDescription());
+        }
+
+        if(category.getProject() != null){
+            projectService.readProjectById(category.getProject().getId());
+            existCategory.setProject(category.getProject());
+        }
+
+        return categoryRepository.save(existCategory);
     }
 
     @Caching(evict = { @CacheEvict(cacheNames = "category", key = "#id"),

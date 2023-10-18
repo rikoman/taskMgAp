@@ -62,7 +62,7 @@ public class TaskService {
 
     @Cacheable(cacheNames = "task", key = "#id")
     public Task readTaskById(Long id){
-        return taskRepository.findById(id).orElseThrow(()-> new NotFoundException(String.format("task with %s id doesn' found",id)));
+        return taskRepository.findById(id).orElseThrow(()-> new NotFoundException(String.format("task with /%s/ id doesn' found",id)));
     }
 
     @Cacheable(cacheNames = "tasksByCategoryId", key = "#id")
@@ -84,6 +84,45 @@ public class TaskService {
             throw new BadRequestException("Invalid request");
         }
         return taskRepository.save(task);
+    }
+
+    @Caching(evict = { @CacheEvict(cacheNames = "task", key = "#task.id"),
+            @CacheEvict(cacheNames = {"tasks", "tasksByStatusFalse", "tasksByProjectId", "taskByCategoryId" }, allEntries = true)})
+    public Task updatePartInfoForTask(Task task){
+        Task existTask = readTaskById(task.getId());
+
+        if(task.getTitle() != null){
+            existTask.setTitle(task.getTitle());
+        }
+
+        if(task.getDescription() != null){
+            existTask.setDescription(task.getDescription());
+        }
+
+        if(task.getPriority() != null){
+            existTask.setPriority(task.getPriority());
+        }
+
+        if(task.getStatus() != null){
+            existTask.setStatus(task.getStatus());
+        }
+
+        if(task.getProject() != null){
+            projectService.readProjectById(task.getProject().getId());
+            existTask.setProject(task.getProject());
+        }
+
+        if(task.getCategory() != null){
+            categoryService.readCategoryById(task.getCategory().getId());
+            existTask.setCategory(task.getCategory());
+        }
+
+        if(task.getParent() != null){
+            readTaskById(task.getId());
+            existTask.setParent(task.getParent());
+        }
+
+        return taskRepository.save(existTask);
     }
 
     @Caching(evict = { @CacheEvict(cacheNames = "task", key = "#id"),

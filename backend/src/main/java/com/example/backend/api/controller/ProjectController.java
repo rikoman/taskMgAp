@@ -42,6 +42,11 @@ public class ProjectController {
         return mappingResponseProject(projectService.updateProject(project));
     }
 
+    @PatchMapping
+    public ResponseEntity<Project> updatePartInfo(@RequestBody Project project){
+        return mappingResponseProject(projectService.updatePartInfoForProject(project));
+    }
+
     @DeleteMapping("/{id}")
     public HttpStatus delete(@PathVariable Long id){
         projectService.deleteProject(id);

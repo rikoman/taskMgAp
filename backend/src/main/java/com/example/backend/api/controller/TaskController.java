@@ -53,6 +53,11 @@ public class TaskController {
         return mappingResponseTask(taskService.updateTask(task));
     }
 
+    @PatchMapping
+    public ResponseEntity<Task> updatePartInfoForTask(@RequestBody Task task){
+        return mappingResponseTask(taskService.updatePartInfoForTask(task));
+    }
+
     @DeleteMapping("/{id}")
     public HttpStatus deleteTask(@PathVariable Long id){
         taskService.deleteTask(id);

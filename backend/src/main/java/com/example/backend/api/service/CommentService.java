@@ -22,7 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CommentService {
 
-    private final CommentRepository repository;
+    private final CommentRepository commentRepository;
     private final ProjectService projectService;
     private final CategoryService categoryService;
     private final TaskService taskService;
@@ -44,30 +44,30 @@ public class CommentService {
                 .project(project)
                 .datePublication(LocalDateTime.now())
                 .build();
-        return repository.save(comment);
+        return commentRepository.save(comment);
     }
 
     @Cacheable(cacheNames = "comments")
     public List<Comment> readAllComment(){
-        return repository.findAll();
+        return commentRepository.findAll();
     }
 
     @Cacheable(cacheNames = "commentsByProjectId", key = "#id")
     public List<Comment> readAllCommentByProjectId(Long id){
         projectService.readProjectById(id);
-        return repository.findByProjectId(id);
+        return commentRepository.findByProjectId(id);
     }
 
     @Cacheable(cacheNames = "commentsByCategoryId", key = "#id")
     public List<Comment> readAllCommentByCategoryId(Long id){
         categoryService.readCategoryById(id);
-        return repository.findByCategoryId(id);
+        return commentRepository.findByCategoryId(id);
     }
 
     @Cacheable(cacheNames = "commentsByTaskId", key = "#id")
     public List<Comment> readAllCommentByTaskId(Long id){
         taskService.readTaskById(id);
-        return repository.findByTaskId(id);
+        return commentRepository.findByTaskId(id);
     }
 
     @Caching(evict = { @CacheEvict(cacheNames = "comment", key = "#comment.id"),
@@ -76,13 +76,25 @@ public class CommentService {
         if(comment.getId() == null || comment.getContent() == null || comment.getCategory() == null && comment.getProject() == null && comment.getTask() == null) {
             throw new BadRequestException("Invalid request");
         }
-        return repository.save(comment);
+        return commentRepository.save(comment);
+    }
+
+    @Caching(evict = { @CacheEvict(cacheNames = "comment", key = "#comment.id"),
+            @CacheEvict(cacheNames = {"comments", "commentsByProjectId", "commentsByCategoryId", "commentsByTaskId"}, allEntries = true) })
+    public Comment updatePartInfoForComment(Comment comment){
+        Comment existComment = commentRepository.findById(comment.getId()).orElseThrow(()-> new NotFoundException(String.format("comment with /%s/ id doesn' found",comment.getId())));
+
+        if(comment.getContent() != null){
+            existComment.setContent(comment.getContent());
+        }
+
+        return commentRepository.save(existComment);
     }
 
     @Caching(evict = { @CacheEvict(cacheNames = "comment", key = "#id"),
                        @CacheEvict(cacheNames = {"comments", "commentsByProjectId", "commentsByCategoryId", "commentsByTaskId"}, allEntries = true) })
     public void deleteComment(Long id){
-        repository.findById(id).orElseThrow(()-> new NotFoundException(String.format("comment with %s id doesn' found",id)));
-        repository.deleteById(id);
+        commentRepository.findById(id).orElseThrow(()-> new NotFoundException(String.format("comment with /%s/ id doesn' found",id)));
+        commentRepository.deleteById(id);
     }
 }

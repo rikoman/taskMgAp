@@ -41,6 +41,11 @@ public class CategoryController {
         return mappingResponseCategory(categoryService.updateCategory(category));
     }
 
+    @PatchMapping
+    public ResponseEntity<Category> updatePartInfo(@RequestBody Category category){
+        return mappingResponseCategory(categoryService.updatePartInfoForCategory(category));
+    }
+
     @DeleteMapping("/{id}")
     public HttpStatus deleteCategory(@PathVariable Long id){
         categoryService.deleteCategory(id);
