@@ -11,15 +11,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ProjectTest {
 
-    Long id = 1l;
+    private final Long id = 1l;
 
-    String title = "title";
+    private final String title = "title";
 
-    String description = "description";
+    private final String description = "description";
 
-    Project project;
+    private Project project;
 
-    List<User> users = new ArrayList<>();
+    private final List<User> users = new ArrayList<>();
 
     @BeforeEach
     void prepareDate(){

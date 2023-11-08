@@ -7,17 +7,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CategoryTest {
 
-    Long id = 1l;
+    private final Long id = 1l;
 
-    String title = "title";
+    private final String title = "title";
 
-    String description = "description";
+    private final String description = "description";
 
-    Project project = Project.builder()
+    private final Project project = Project.builder()
             .title("Project Title")
             .build();
 
-    Category category;
+    private Category category;
 
     @BeforeEach
     void prepareDate(){

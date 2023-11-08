@@ -9,27 +9,27 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CommentTest {
 
-    Long id = 1l;
+    private final Long id = 1l;
 
-    String content = "content";
+    private final String content = "content";
 
-    Project project = Project.builder()
+    private final Project project = Project.builder()
             .title("Project Title")
             .build();
 
-    Category category = Category.builder()
+    private final Category category = Category.builder()
             .title("category Title")
             .project(project)
             .build();
 
-    Task task = Task.builder()
+    private final Task task = Task.builder()
             .title("title")
             .project(project)
             .build();
 
-    Comment comment;
+    private Comment comment;
 
-    LocalDateTime time = LocalDateTime.now();
+    private final LocalDateTime time = LocalDateTime.now();
 
     @BeforeEach
     void prepareDate(){

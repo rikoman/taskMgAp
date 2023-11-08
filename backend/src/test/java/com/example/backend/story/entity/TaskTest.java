@@ -10,30 +10,30 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TaskTest {
 
-    Long id = 1l;
+    private final Long id = 1l;
 
-    String title = "Buy milk";
+    private final String title = "Buy milk";
 
-    String description = "buy milk in supermarket";
+    private final String description = "buy milk in supermarket";
 
-    Integer priority = 3;
+    private final Integer priority = 3;
 
-    Boolean status = true;
+    private final Boolean status = true;
 
-    LocalDate time = LocalDate.now();
+    private final LocalDate time = LocalDate.now();
 
-    Project project = Project.builder()
+    private final Project project = Project.builder()
             .title("Project Title")
             .build();
-    Category category = Category.builder()
+    private final Category category = Category.builder()
             .title("category Title")
             .project(project)
             .build();
-    Task taskParent = Task.builder()
+    private final Task taskParent = Task.builder()
             .title("title")
             .project(project)
             .build();
-    Task task;
+    private Task task;
 
     @BeforeEach
     void prepareData() {
