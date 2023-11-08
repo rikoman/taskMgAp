@@ -23,16 +23,13 @@ class TaskTest {
     LocalDate time = LocalDate.now();
 
     Project project = Project.builder()
-            .id(1l)
             .title("Project Title")
             .build();
     Category category = Category.builder()
-            .id(1l)
             .title("category Title")
             .project(project)
             .build();
     Task taskParent = Task.builder()
-            .id(1l)
             .title("title")
             .project(project)
             .build();
@@ -100,75 +97,90 @@ class TaskTest {
 
     @Test
     void setId() {
-        Long id = 2l;
-        task.setId(id);
-        assertEquals(id, task.getId());
+        Long newId = 2l;
+
+        task.setId(newId);
+
+        assertEquals(newId, task.getId());
     }
 
     @Test
     void setTitle() {
-        String title = "buy car";
-        task.setTitle(title);
-        assertEquals(title, task.getTitle());
+        String newTitle = "buy car";
+
+        task.setTitle(newTitle);
+
+        assertEquals(newTitle, task.getTitle());
     }
 
     @Test
     void setStatus() {
-        Boolean status = false;
-        task.setStatus(status);
-        assertEquals(status, task.getStatus());
+        Boolean newStatus = false;
+
+        task.setStatus(newStatus);
+
+        assertEquals(newStatus, task.getStatus());
     }
 
     @Test
     void setDescription() {
-        String description = "buy milk in other city";
-        task.setDescription(description);
-        assertEquals(description, task.getDescription());
+        String newDescription = "buy milk in other city";
+
+        task.setDescription(newDescription);
+
+        assertEquals(newDescription, task.getDescription());
     }
 
     @Test
     void setPriority() {
-        Integer priority = 3;
-        task.setPriority(priority);
-        assertEquals(priority, task.getPriority());
+        Integer newPriority = 3;
+
+        task.setPriority(newPriority);
+
+        assertEquals(newPriority, task.getPriority());
     }
 
     @Test
     void setProject() {
         Project newProject = Project.builder()
-                .id(2l)
                 .title("Title")
                 .build();
+
         task.setProject(newProject);
+
         assertEquals(newProject, task.getProject());
     }
 
     @Test
     void setCategory() {
         Category newCategory = Category.builder()
-                .id(2l)
                 .title("Title")
                 .project(project)
                 .build();
+
         task.setCategory(newCategory);
+
         assertEquals(newCategory, task.getCategory());
     }
 
     @Test
     void setTaskParent() {
         Task newTask = Task.builder()
-                .id(2L)
                 .title("Task title")
                 .project(project)
                 .build();
+
         task.setParent(newTask);
+
         assertEquals(newTask, task.getParent());
     }
 
     @Test
     void setDateCreate() {
         LocalDate newDate = LocalDate.now();
+
         task.setDateCreate(newDate);
+
         assertEquals(newDate,task.getDateCreate());
     }
 
@@ -185,6 +197,7 @@ class TaskTest {
                 .parent(taskParent)
                 .dateCreate(time)
                 .build();
+
         assertEquals(this.task,task);
     }
 

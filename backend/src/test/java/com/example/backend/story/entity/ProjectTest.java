@@ -19,13 +19,14 @@ class ProjectTest {
 
     Project project;
 
-    List<User> users= new ArrayList<>();
+    List<User> users = new ArrayList<>();
 
     @BeforeEach
     void prepareDate(){
         users.add(new User("Roman","dhjsfbjhbf","dsaf@sdf.com"));
         users.add(new User("Romasdan","dhjsfbjhaaabf","dsaf@dddsdf.com"));
         users.add(new User("Romssan","dhjsfbasdjhbf","dsaf@sasddf.com"));
+
         project = Project.builder()
                 .id(id)
                 .title(title)
@@ -57,28 +58,36 @@ class ProjectTest {
     @Test
     void setId() {
         Long id = 2l;
+
         project.setId(id);
+
         assertEquals(id,project.getId());
     }
 
     @Test
     void setTitle() {
         String title = "Home work";
+
         project.setTitle(title);
+
         assertEquals(title,project.getTitle());
     }
 
     @Test
     void setDescription() {
         String description = "bad businnes";
+
         project.setDescription(description);
+
         assertEquals(description,project.getDescription());
     }
 
     @Test
     void setUser() {
         List<User> newUser = List.of(new User("Roman","dhjsfbjhbf","dsaf@sdf.com"));
+
         project.setUsers(newUser);
+
         assertEquals(newUser,project.getUsers());
     }
 
@@ -90,6 +99,7 @@ class ProjectTest {
                 .description(description)
                 .users(users)
                 .build();
+
         assertEquals(project,project1);
     }
 

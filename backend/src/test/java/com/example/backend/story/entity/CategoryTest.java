@@ -14,7 +14,6 @@ class CategoryTest {
     String description = "description";
 
     Project project = Project.builder()
-            .id(1l)
             .title("Project Title")
             .build();
 
@@ -53,31 +52,38 @@ class CategoryTest {
     @Test
     void setId() {
         Long newId = 2l;
+
         category.setId(newId);
+
         assertEquals(newId,category.getId());
     }
 
     @Test
     void setTitle() {
         String newtitle = "отложить";
+
         category.setTitle(newtitle);
+
         assertEquals(newtitle, category.getTitle());
     }
 
     @Test
     void setDescription() {
         String newDescription = "Выполнить потом";
+
         category.setDescription(newDescription);
+
         assertEquals(newDescription,category.getDescription());
     }
 
     @Test
     void setProject() {
         Project newProject = Project.builder()
-                .id(2l)
                 .title("Title")
                 .build();
+
         category.setProject(newProject);
+
         assertEquals(newProject,category.getProject());
     }
     @Test
@@ -88,6 +94,7 @@ class CategoryTest {
                 .description(description)
                 .project(project)
                 .build();
+
         assertEquals(category,category1);
     }
 

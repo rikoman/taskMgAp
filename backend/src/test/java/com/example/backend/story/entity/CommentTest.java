@@ -9,24 +9,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CommentTest {
 
-
     Long id = 1l;
 
     String content = "content";
 
     Project project = Project.builder()
-            .id(1l)
             .title("Project Title")
             .build();
 
     Category category = Category.builder()
-            .id(1l)
             .title("category Title")
             .project(project)
             .build();
 
     Task task = Task.builder()
-            .id(1l)
             .title("title")
             .project(project)
             .build();
@@ -40,9 +36,9 @@ class CommentTest {
         comment = Comment.builder()
                 .id(id)
                 .content(content)
-                .task(task)
-                .category(category)
                 .project(project)
+                .category(category)
+                .task(task)
                 .datePublication(time)
                 .build();
     }
@@ -79,52 +75,63 @@ class CommentTest {
 
     @Test
     void setId() {
-        comment.setId(2L);
-        assertEquals(2l,comment.getId());
+        Long newId = 2L;
+
+        comment.setId(newId);
+
+        assertEquals(newId,comment.getId());
     }
 
     @Test
     void setContent() {
-        comment.setContent("Content text");
-        assertEquals("Content text",comment.getContent());
+        String newContent = "Content text";
+
+        comment.setContent(newContent);
+
+        assertEquals(newContent,comment.getContent());
     }
 
     @Test
     void setTask() {
         Task newTask = Task.builder()
-                .id(2L)
                 .title("Task title")
                 .project(project)
                 .build();
-        comment.setTask(newTask);
-        assertEquals(newTask,comment.getTask());
-    }
 
-    @Test
-    void setProject() {
-        Project newProject = Project.builder()
-                .id(2l)
-                .title("Title")
-                .build();
-        comment.setProject(newProject);
-        assertEquals(newProject,comment.getProject());
+        comment.setTask(newTask);
+
+        assertEquals(newTask,comment.getTask());
     }
 
     @Test
     void setCategory() {
         Category newCategory = Category.builder()
-                .id(2l)
                 .title("Title")
                 .project(project)
                 .build();
+
         comment.setCategory(newCategory);
+
         assertEquals(newCategory,comment.getCategory());
+    }
+
+    @Test
+    void setProject() {
+        Project newProject = Project.builder()
+                .title("Title")
+                .build();
+
+        comment.setProject(newProject);
+
+        assertEquals(newProject,comment.getProject());
     }
 
     @Test
     void setDatePublication() {
         LocalDateTime newDate = LocalDateTime.now();
+
         comment.setDatePublication(newDate);
+
         assertEquals(newDate,comment.getDatePublication());
     }
 
@@ -138,6 +145,7 @@ class CommentTest {
                 .project(project)
                 .datePublication(time)
                 .build();
+
         assertEquals(comment, comment1);
     }
 
