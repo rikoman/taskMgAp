@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Service
 @AllArgsConstructor
 public class CommentService {
@@ -29,7 +28,15 @@ public class CommentService {
 
     @CacheEvict(cacheNames = {"comments", "commentsByProjectId", "commentsByCategoryId", "commentsByTaskId"}, allEntries = true)
     public Comment createComment(CommentDTO dto){
-        if(dto.getContent()==null || dto.getCategoryId() == null && dto.getProjectId() == null && dto.getTaskId() == null){
+        if(dto.getContent()==null){
+            throw new BadRequestException("Invalid request");
+        }
+
+        if(dto.getProjectId() == null && dto.getCategoryId() == null && dto.getTaskId() == null){
+            throw new BadRequestException("Invalid request");
+        }
+
+        if ((dto.getProjectId() != null && dto.getCategoryId() != null) || (dto.getProjectId() != null && dto.getTaskId() != null) || (dto.getCategoryId() != null && dto.getTaskId() != null)){
             throw new BadRequestException("Invalid request");
         }
 
@@ -44,6 +51,7 @@ public class CommentService {
                 .project(project)
                 .datePublication(LocalDateTime.now())
                 .build();
+
         return commentRepository.save(comment);
     }
 
@@ -73,9 +81,18 @@ public class CommentService {
     @Caching(evict = { @CacheEvict(cacheNames = "comment", key = "#comment.id"),
                        @CacheEvict(cacheNames = {"comments", "commentsByProjectId", "commentsByCategoryId", "commentsByTaskId"}, allEntries = true) })
     public Comment updateComment(Comment comment){
-        if(comment.getId() == null || comment.getContent() == null || comment.getCategory() == null && comment.getProject() == null && comment.getTask() == null) {
+        if(comment.getId() == null || comment.getContent()==null){
             throw new BadRequestException("Invalid request");
         }
+
+        if(comment.getProject() == null && comment.getCategory() == null && comment.getTask() == null){
+            throw new BadRequestException("Invalid request");
+        }
+
+        if ((comment.getProject() != null && comment.getCategory() != null) || (comment.getProject() != null && comment.getTask() != null) || (comment.getCategory() != null && comment.getTask() != null)){
+            throw new BadRequestException("Invalid request");
+        }
+
         return commentRepository.save(comment);
     }
 
@@ -87,7 +104,6 @@ public class CommentService {
         if(comment.getContent() != null){
             existComment.setContent(comment.getContent());
         }
-
         return commentRepository.save(existComment);
     }
 

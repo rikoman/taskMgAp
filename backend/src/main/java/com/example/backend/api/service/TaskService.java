@@ -27,7 +27,15 @@ public class TaskService {
 
     @CacheEvict(cacheNames = {"tasks", "tasksByStatusFalse", "tasksByProjectId", "taskByCategoryId" }, allEntries = true)
     public Task createTask(TaskDTO dto){
-        if(dto.getTitle()==null || dto.getStatus()==null || dto.getCategoryId() == null && dto.getParentId() == null && dto.getProjectId() == null){
+        if(dto.getTitle() == null || dto.getStatus() == null){
+            throw new BadRequestException("Invalid request");
+        }
+
+        if(dto.getProjectId() == null && dto.getCategoryId() == null && dto.getParentId() == null){
+            throw new BadRequestException("Invalid request");
+        }
+
+        if ((dto.getProjectId() != null && dto.getCategoryId() != null) || (dto.getProjectId() != null && dto.getParentId() != null) || (dto.getCategoryId() != null && dto.getParentId() != null)){
             throw new BadRequestException("Invalid request");
         }
 
@@ -49,6 +57,7 @@ public class TaskService {
                 .dateCreate(dto.getDateCreate())
                 .parent(parentTask)
                 .build();
+
         return taskRepository.save(task);
     }
 
@@ -58,7 +67,9 @@ public class TaskService {
     }
 
     @Cacheable(cacheNames = "tasksByStatusFalse")
-    public List<Task> readAllTaskByStatusFalse(){return taskRepository.findByStatusFalse();}
+    public List<Task> readAllTaskByStatusFalse(){
+        return taskRepository.findByStatusFalse();
+    }
 
     @Cacheable(cacheNames = "task", key = "#id")
     public Task readTaskById(Long id){
@@ -80,9 +91,18 @@ public class TaskService {
     @Caching(evict = { @CacheEvict(cacheNames = "task", key = "#task.id"),
                        @CacheEvict(cacheNames = {"tasks", "tasksByStatusFalse", "tasksByProjectId", "taskByCategoryId" }, allEntries = true)})
     public Task updateTask(Task task){
-        if(task.getId() == null || task.getTitle() == null || task.getStatus() == null || task.getCategory() == null && task.getParent() == null && task.getProject() == null) {
+        if(task.getId() == null || task.getTitle() == null || task.getStatus() == null){
             throw new BadRequestException("Invalid request");
         }
+
+        if(task.getProject() == null && task.getCategory() == null && task.getParent() == null){
+            throw new BadRequestException("Invalid request");
+        }
+
+        if ((task.getProject() != null && task.getCategory() != null) || (task.getProject() != null && task.getParent() != null) || (task.getCategory() != null && task.getParent() != null)){
+            throw new BadRequestException("Invalid request");
+        }
+
         return taskRepository.save(task);
     }
 
@@ -121,7 +141,6 @@ public class TaskService {
             readTaskById(task.getId());
             existTask.setParent(task.getParent());
         }
-
         return taskRepository.save(existTask);
     }
 
