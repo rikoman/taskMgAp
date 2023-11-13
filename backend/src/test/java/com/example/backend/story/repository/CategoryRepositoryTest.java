@@ -53,13 +53,14 @@ public class CategoryRepositoryTest {
 
     @Test
     void saveTest(){
-        repository.save(category);
+        Category savedCategory = repository.save(category);
 
-        Category category1 = repository.findById(id).orElseThrow();
+        Category category1 = repository.findById(savedCategory.getId()).orElseThrow();
 
-        assertEquals(id,category1.getId());
-        assertEquals(title,category1.getTitle());
-        assertEquals(description,category1.getDescription());
+        assertEquals(savedCategory.getId(),category1.getId());
+        assertEquals(savedCategory.getTitle(),category1.getTitle());
+        assertEquals(savedCategory.getDescription(),category1.getDescription());
+        assertEquals(savedCategory.getProject(),category1.getProject());
     }
 
     @Test
@@ -100,11 +101,11 @@ public class CategoryRepositoryTest {
 
     @Test
     void deleteByIdTest(){
-        repository.save(category);
+        Category savedCategory = repository.save(category);
 
-        repository.deleteById(id);
+        repository.deleteById(savedCategory.getId());
 
-        Optional<Category> category1 = repository.findById(id);
+        Optional<Category> category1 = repository.findById(savedCategory.getId());
 
         assertTrue(category1.isEmpty());
     }

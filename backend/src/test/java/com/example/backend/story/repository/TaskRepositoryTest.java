@@ -48,10 +48,12 @@ class TaskRepositoryTest {
     private final Project project = Project.builder()
             .title("Project Title")
             .build();
+
     private final Category category = Category.builder()
             .title("category Title")
             .project(project)
             .build();
+
     private final Task taskParent = Task.builder()
             .title("title")
             .project(project)
@@ -72,25 +74,25 @@ class TaskRepositoryTest {
                 .build();
 
         projectRepository.save(project);
+
         categoryRepository.save(category);
     }
 
     @Test
     void saveTest(){
-        repository.save(taskParent);
-        repository.save(task);
+        Task savedTask = repository.save(task);
 
-        Task task1 = repository.findById(id).orElseThrow();
+        Task task1 = repository.findById(savedTask.getId()).orElseThrow();
 
-        assertEquals(id,task1.getId());
-        assertEquals(title,task1.getTitle());
-        assertEquals(description,task1.getDescription());
-        assertEquals(priority,task1.getPriority());
-        assertEquals(status,task1.getStatus());
-        assertEquals(project,task1.getProject());
-        assertEquals(category,task1.getCategory());
-        assertEquals(taskParent,task1.getParent());
-        assertEquals(time,task1.getDateCreate());
+        assertEquals(savedTask.getId(),task1.getId());
+        assertEquals(savedTask.getTitle(),task1.getTitle());
+        assertEquals(savedTask.getDescription(),task1.getDescription());
+        assertEquals(savedTask.getPriority(),task1.getPriority());
+        assertEquals(savedTask.getStatus(),task1.getStatus());
+        assertEquals(savedTask.getProject(),task1.getProject());
+        assertEquals(savedTask.getCategory(),task1.getCategory());
+        assertEquals(savedTask.getParent(),task1.getParent());
+        assertEquals(savedTask.getDateCreate(),task1.getDateCreate());
     }
 
     @Test
@@ -115,6 +117,7 @@ class TaskRepositoryTest {
         Integer newPriority = 1;
         Boolean newStatus = true;
         LocalDate newDate = LocalDate.now();
+
         Project newProject = Project.builder()
                 .title("Project Title")
                 .build();
@@ -154,11 +157,11 @@ class TaskRepositoryTest {
 
     @Test
     void deleteByIdTest(){
-        repository.save(task);
+        Task savedTask = repository.save(task);
 
-        repository.deleteById(id);
+        repository.deleteById(savedTask.getId());
 
-        Optional<Task> task1 = repository.findById(id);
+        Optional<Task> task1 = repository.findById(savedTask.getId());
 
         assertTrue(task1.isEmpty());
     }

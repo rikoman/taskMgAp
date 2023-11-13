@@ -50,14 +50,14 @@ class ProjectRepositoryTest {
 
     @Test
     void saveTest(){
-        repository.save(project);
+        Project savedProject = repository.save(project);
 
-        Project project1 = repository.findById(id).orElseThrow();
+        Project project1 = repository.findById(savedProject.getId()).orElseThrow();
 
-        assertEquals(id,project1.getId());
-        assertEquals(title,project1.getTitle());
-        assertEquals(description,project1.getDescription());
-        assertEquals(List.of(user),project1.getUsers());
+        assertEquals(savedProject.getId(),project1.getId());
+        assertEquals(savedProject.getTitle(),project1.getTitle());
+        assertEquals(savedProject.getDescription(),project1.getDescription());
+        assertEquals(savedProject.getUsers(),project1.getUsers());
     }
 
     @Test
@@ -93,11 +93,11 @@ class ProjectRepositoryTest {
 
     @Test
     void deleteByIdTest(){
-        repository.save(project);
+        Project savedProject = repository.save(project);
 
-        repository.deleteById(id);
+        repository.deleteById(savedProject.getId());
 
-        Optional<Project> project1 = repository.findById(id);
+        Optional<Project> project1 = repository.findById(savedProject.getId());
 
         assertTrue(project1.isEmpty());
     }

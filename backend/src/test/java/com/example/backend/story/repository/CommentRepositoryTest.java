@@ -65,21 +65,23 @@ class CommentRepositoryTest {
                 .build();
 
         projectRepository.save(project);
+
         categoryRepository.save(category);
+
         taskRepository.save(task);
     }
 
     @Test
     void saveTest(){
-        repository.save(comment);
+        Comment savedComment = repository.save(comment);
 
         Comment comment1 = repository.findById(id).orElseThrow();
 
-        assertEquals(id,comment1.getId());
-        assertEquals(content,comment1.getContent());
-        assertEquals(project,comment1.getProject());
-        assertEquals(category,comment1.getCategory());
-        assertEquals(task,comment1.getTask());
+        assertEquals(savedComment.getId(),comment1.getId());
+        assertEquals(savedComment.getContent(),comment1.getContent());
+        assertEquals(savedComment.getProject(),comment1.getProject());
+        assertEquals(savedComment.getCategory(),comment1.getCategory());
+        assertEquals(savedComment.getTask(),comment1.getTask());
     }
 
     @Test
@@ -131,33 +133,39 @@ class CommentRepositoryTest {
 
     @Test
     void deleteByIdTest(){
-        repository.save(comment);
+        Comment savedComment = repository.save(comment);
 
-        repository.deleteById(id);
+        repository.deleteById(savedComment.getId());
 
-        Optional<Comment> comment1 = repository.findById(id);
+        Optional<Comment> comment1 = repository.findById(savedComment.getId());
 
         assertTrue(comment1.isEmpty());
     }
 
     @Test
     void findByProjectId() {
-        repository.save(comment);
+        Comment savedComment = repository.save(comment);
 
-        List<Comment> result = repository.findByProjectId(project.getId());
+        List<Comment> result = repository.findByProjectId(savedComment.getProject().getId());
+
+        assertEquals(1, result.size());
     }
 
     @Test
     void findByCategoryId() {
-        repository.save(comment);
+        Comment savedComment = repository.save(comment);
 
-        List<Comment> result = repository.findByCategoryId(project.getId());
+        List<Comment> result = repository.findByCategoryId(savedComment.getCategory().getId());
+
+        assertEquals(1, result.size());
     }
 
     @Test
     void findByTaskId() {
-        repository.save(comment);
+        Comment savedComment = repository.save(comment);
 
-        List<Comment> result = repository.findByTaskId(project.getId());
+        List<Comment> result = repository.findByTaskId(savedComment.getTask().getId());
+
+        assertEquals(1, result.size());
     }
 }
