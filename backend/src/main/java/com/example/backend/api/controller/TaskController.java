@@ -18,57 +18,51 @@ public class TaskController {
 
     private final TaskService taskService;
 
+    private final MappingResponse<Task> mappingResponse;
+
     @PostMapping
     public ResponseEntity<Task> createTask(@RequestBody TaskDTO dto) throws ParseException {
-        return mappingResponseTask(taskService.createTask(dto));
+        return mappingResponse.entity(taskService.createTask(dto));
     }
 
     @GetMapping
     public ResponseEntity<List<Task>> readAllTask(){
-        return mappingResponseListTask(taskService.readAllTask());
+        return mappingResponse.listEntity(taskService.readAllTask());
     }
 
     @GetMapping("/false")
     public ResponseEntity<List<Task>> readAllTaskByStatusFalse(){
-        return mappingResponseListTask(taskService.readAllTaskByStatusFalse());
+        return mappingResponse.listEntity(taskService.readAllTaskByStatusFalse());
     }
 
     @GetMapping("/data/{id}")
     public ResponseEntity<Task> readTaskById(@PathVariable Long id){
-        return mappingResponseTask(taskService.readTaskById(id));
+        return mappingResponse.entity(taskService.readTaskById(id));
     }
 
     @GetMapping("/category/{id}")
     public ResponseEntity<List<Task>> readAllTaskByCategoryId(@PathVariable Long id){
-        return mappingResponseListTask(taskService.readAllTaskByCategoryId(id));
+        return mappingResponse.listEntity(taskService.readAllTaskByCategoryId(id));
     }
 
     @GetMapping("/project/{id}")
     public ResponseEntity<List<Task>> readAlTaskByProjectId(@PathVariable Long id){
-        return mappingResponseListTask(taskService.readAllTaskByProjectId(id));
+        return mappingResponse.listEntity(taskService.readAllTaskByProjectId(id));
     }
 
     @PutMapping
     public ResponseEntity<Task> updateTask(@RequestBody Task task){
-        return mappingResponseTask(taskService.updateTask(task));
+        return mappingResponse.entity(taskService.updateTask(task));
     }
 
     @PatchMapping
     public ResponseEntity<Task> updatePartInfoForTask(@RequestBody Task task){
-        return mappingResponseTask(taskService.updatePartInfoForTask(task));
+        return mappingResponse.entity(taskService.updatePartInfoForTask(task));
     }
 
     @DeleteMapping("/{id}")
     public HttpStatus deleteTask(@PathVariable Long id){
         taskService.deleteTask(id);
         return HttpStatus.OK;
-    }
-
-    private ResponseEntity<Task> mappingResponseTask(Task task){
-        return new ResponseEntity<>(task,HttpStatus.OK);
-    }
-
-    private ResponseEntity<List<Task>> mappingResponseListTask(List<Task> task){
-        return new ResponseEntity<>(task,HttpStatus.OK);
     }
 }

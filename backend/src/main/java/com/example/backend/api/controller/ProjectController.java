@@ -17,47 +17,41 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
+    private final MappingResponse<Project> mappingResponse;
+
     @PostMapping
     public ResponseEntity<Project> create(@RequestBody ProjectDTO dto){
-        return mappingResponseProject(projectService.createProject(dto));
+        return mappingResponse.entity(projectService.createProject(dto));
     }
 
     @GetMapping
     public ResponseEntity<List<Project>> readAllProject(){
-        return mappingResponseListProject(projectService.readAllProject());
+        return mappingResponse.listEntity(projectService.readAllProject());
     }
 
     @GetMapping("/data/{id}")
     public ResponseEntity<Project> readProjectById(@PathVariable Long id) {
-        return mappingResponseProject(projectService.readProjectById(id));
+        return mappingResponse.entity(projectService.readProjectById(id));
     }
 
     @GetMapping("/user/{id}")
     public ResponseEntity<List<Project>> readAllProjectByUserId(@PathVariable Long id){
-        return mappingResponseListProject(projectService.readAllProjectByUserId(id));
+        return mappingResponse.listEntity(projectService.readAllProjectByUserId(id));
     }
 
     @PutMapping
     public ResponseEntity<Project> update(@RequestBody Project project){
-        return mappingResponseProject(projectService.updateProject(project));
+        return mappingResponse.entity(projectService.updateProject(project));
     }
 
     @PatchMapping
     public ResponseEntity<Project> updatePartInfo(@RequestBody Project project){
-        return mappingResponseProject(projectService.updatePartInfoForProject(project));
+        return mappingResponse.entity(projectService.updatePartInfoForProject(project));
     }
 
     @DeleteMapping("/{id}")
     public HttpStatus delete(@PathVariable Long id){
         projectService.deleteProject(id);
         return HttpStatus.OK;
-    }
-
-    private ResponseEntity<Project> mappingResponseProject(Project project){
-        return new ResponseEntity<>(project,HttpStatus.OK);
-    }
-
-    private ResponseEntity<List<Project>> mappingResponseListProject(List<Project> project){
-        return new ResponseEntity<>(project,HttpStatus.OK);
     }
 }

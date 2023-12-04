@@ -15,54 +15,48 @@ import java.util.List;
 @AllArgsConstructor
 public class CommentController {
 
-    private CommentService service;
+    private final CommentService service;
+
+    private final MappingResponse<Comment> mappingResponse;
 
     @PostMapping()
     public ResponseEntity<Comment> createComment(@RequestBody CommentDTO dto){
-        return mappingResponseComment(service.createComment(dto));
+        return mappingResponse.entity(service.createComment(dto));
     }
 
     @GetMapping
     public ResponseEntity<List<Comment>> readAllComment(){
-        return mappingResponseListComment(service.readAllComment());
+        return mappingResponse.listEntity(service.readAllComment());
     }
 
     @GetMapping("/project/{id}")
     public ResponseEntity<List<Comment>> readAllCommentByProjectId(@PathVariable Long id){
-        return mappingResponseListComment(service.readAllCommentByProjectId(id));
+        return mappingResponse.listEntity(service.readAllCommentByProjectId(id));
     }
 
     @GetMapping("/category/{id}")
     public ResponseEntity<List<Comment>> readAllCommentByCategoryId(@PathVariable Long id){
-        return mappingResponseListComment(service.readAllCommentByCategoryId(id));
+        return mappingResponse.listEntity(service.readAllCommentByCategoryId(id));
     }
 
     @GetMapping("/task/{id}")
     public ResponseEntity<List<Comment>> readAllCommentByTaskId(@PathVariable Long id){
-        return mappingResponseListComment(service.readAllCommentByTaskId(id));
+        return mappingResponse.listEntity(service.readAllCommentByTaskId(id));
     }
 
     @PutMapping
     public ResponseEntity<Comment> updateComment(@RequestBody Comment comment){
-        return mappingResponseComment(service.updateComment(comment));
+        return mappingResponse.entity(service.updateComment(comment));
     }
 
     @PatchMapping
     public ResponseEntity<Comment> updatePartInfo(@RequestBody Comment comment){
-        return mappingResponseComment(service.updatePartInfoForComment(comment));
+        return mappingResponse.entity(service.updatePartInfoForComment(comment));
     }
 
     @DeleteMapping("/{id}")
     public HttpStatus deleteComment(@PathVariable Long id){
         service.deleteComment(id);
         return HttpStatus.OK;
-    }
-
-    private ResponseEntity<Comment> mappingResponseComment(Comment comment){
-        return new ResponseEntity<>(comment,HttpStatus.OK);
-    }
-
-    private ResponseEntity<List<Comment>> mappingResponseListComment(List<Comment> comment){
-        return new ResponseEntity<>(comment,HttpStatus.OK);
     }
 }

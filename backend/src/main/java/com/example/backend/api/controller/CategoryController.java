@@ -14,49 +14,44 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("/categories")
 public class CategoryController {
+
     private final CategoryService categoryService;
+
+    private final MappingResponse<Category> mappingResponse;
 
     @PostMapping
     public ResponseEntity<Category> createCategory(@RequestBody CategoryDTO dto){
-        return mappingResponseCategory(categoryService.createCategory(dto));
+        return mappingResponse.entity(categoryService.createCategory(dto));
     }
 
     @GetMapping
     public ResponseEntity<List<Category>> readAllCategory(){
-        return mappingResponseListCategory(categoryService.readAllCategory());
+        return mappingResponse.listEntity(categoryService.readAllCategory());
     }
 
     @GetMapping("/data/{id}")
     public ResponseEntity<Category> readById(@PathVariable Long id){
-        return mappingResponseCategory(categoryService.readCategoryById(id));
+        return mappingResponse.entity(categoryService.readCategoryById(id));
     }
 
     @GetMapping("/project/{id}")
     public ResponseEntity<List<Category>> readAllCategoryByProjectId(@PathVariable Long id){
-        return mappingResponseListCategory(categoryService.readAllCategoryByProjectId(id));
+        return mappingResponse.listEntity(categoryService.readAllCategoryByProjectId(id));
     }
 
     @PutMapping
     public ResponseEntity<Category> updateCategory(@RequestBody Category category){
-        return mappingResponseCategory(categoryService.updateCategory(category));
+        return mappingResponse.entity(categoryService.updateCategory(category));
     }
 
     @PatchMapping
     public ResponseEntity<Category> updatePartInfo(@RequestBody Category category){
-        return mappingResponseCategory(categoryService.updatePartInfoForCategory(category));
+        return mappingResponse.entity(categoryService.updatePartInfoForCategory(category));
     }
 
     @DeleteMapping("/{id}")
     public HttpStatus deleteCategory(@PathVariable Long id){
         categoryService.deleteCategory(id);
         return HttpStatus.OK;
-    }
-
-    private ResponseEntity<Category> mappingResponseCategory(Category category){
-        return new ResponseEntity<>(category,HttpStatus.OK);
-    }
-
-    private ResponseEntity<List<Category>> mappingResponseListCategory(List<Category> category){
-        return new ResponseEntity<>(category,HttpStatus.OK);
     }
 }
