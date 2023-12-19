@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -24,8 +25,8 @@ public class TaskController {
     private final PageData<Task> pageData;
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody TaskDTO dto) throws ParseException {
-        return mappingResponse.entity(taskService.createTask(dto));
+    public ResponseEntity<Task> createTask(@RequestBody TaskDTO dto, Authentication authentication) throws ParseException {
+        return mappingResponse.entity(taskService.createTask(dto,authentication));
     }
 
     @GetMapping
