@@ -1,5 +1,6 @@
-package com.example.backend.story.entity.user;
+package com.example.backend.story.entity;
 
+import com.example.backend.story.enums.ERole;
 import jakarta.persistence.*;
 import lombok.*;
 

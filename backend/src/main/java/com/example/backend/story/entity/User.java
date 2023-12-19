@@ -1,4 +1,4 @@
-package com.example.backend.story.entity.user;
+package com.example.backend.story.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;

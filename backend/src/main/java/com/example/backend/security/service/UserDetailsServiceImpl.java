@@ -1,6 +1,6 @@
 package com.example.backend.security.service;
 
-import com.example.backend.story.entity.user.User;
+import com.example.backend.story.entity.User;
 import com.example.backend.story.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

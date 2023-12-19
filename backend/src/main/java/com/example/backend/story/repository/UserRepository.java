@@ -1,6 +1,6 @@
 package com.example.backend.story.repository;
 
-import com.example.backend.story.entity.user.User;
+import com.example.backend.story.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package com.example.backend.story.entity.user;
+package com.example.backend.story.enums;
 
 public enum ERole {
     ROLE_USER,
