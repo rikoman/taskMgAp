@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,8 +23,8 @@ public class CommentController {
     private final PageData<Comment> pageData;
 
     @PostMapping()
-    public ResponseEntity<Comment> createComment(@RequestBody CommentDTO dto){
-        return mappingResponse.entity(service.createComment(dto));
+    public ResponseEntity<Comment> createComment(@RequestBody CommentDTO dto, Authentication authentication){
+        return mappingResponse.entity(service.createComment(dto,authentication));
     }
 
     @GetMapping

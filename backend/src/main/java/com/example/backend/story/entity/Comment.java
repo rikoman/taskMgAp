@@ -38,4 +38,7 @@ public class Comment implements Serializable {
     private Category category;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime datePublication;
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private User author;
 }

@@ -1,5 +1,6 @@
 package com.example.backend.api.service;
 
+import com.example.backend.api.component.CustomUserPrincipal;
 import com.example.backend.story.DTO.CommentDTO;
 import com.example.backend.api.exception.BadRequestException;
 import com.example.backend.api.exception.NotFoundException;
@@ -14,6 +15,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,9 +28,11 @@ public class CommentService {
     private final ProjectService projectService;
     private final CategoryService categoryService;
     private final TaskService taskService;
+    private final UserService userService;
+    private final CustomUserPrincipal customUserPrincipal;
 
     @CacheEvict(cacheNames = {"comments", "commentsByProjectId", "commentsByCategoryId", "commentsByTaskId"}, allEntries = true)
-    public Comment createComment(CommentDTO dto){
+    public Comment createComment(CommentDTO dto, Authentication authentication){
         if(dto.getContent()==null){
             throw new BadRequestException("Invalid request");
         }
@@ -51,6 +55,7 @@ public class CommentService {
                 .category(category)
                 .project(project)
                 .datePublication(LocalDateTime.now())
+                .author(userService.readUserById(customUserPrincipal.getUserDetails(authentication).getId()))
                 .build();
 
         return commentRepository.save(comment);
