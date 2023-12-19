@@ -53,19 +53,23 @@ public class TaskController {
     @GetMapping("/category/{id}")
     public ResponseEntity<PageDataDTO<Task>> readAllTaskByCategoryId(
             @PathVariable Long id,
+            @RequestParam String status,
+            @RequestParam String priority,
             @RequestParam(required = false,defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "10") int size
     ){
-        return mappingResponse.listEntity(pageData.pageDataDTO(taskService.readAllTaskByCategoryId(id,PageRequest.of(page,size))));
+        return mappingResponse.listEntity(pageData.pageDataDTO(taskService.readAllTaskByCategoryId(id,status,priority,PageRequest.of(page,size))));
     }
 
     @GetMapping("/project/{id}")
     public ResponseEntity<PageDataDTO<Task>> readAlTaskByProjectId(
             @PathVariable Long id,
+            @RequestParam String status,
+            @RequestParam String priority,
             @RequestParam(required = false,defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "10") int size
     ){
-        return mappingResponse.listEntity(pageData.pageDataDTO(taskService.readAllTaskByProjectId(id,PageRequest.of(page, size))));
+        return mappingResponse.listEntity(pageData.pageDataDTO(taskService.readAllTaskByProjectId(id,status,priority,PageRequest.of(page, size))));
     }
 
     @PutMapping

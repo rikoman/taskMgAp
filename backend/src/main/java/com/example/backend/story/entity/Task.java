@@ -44,5 +44,6 @@ public class Task implements Serializable {
     private LocalDate dateCreate;
     @ManyToOne
     @JoinColumn(name = "author_id")
+    @JsonIdentityReference(alwaysAsId = true)
     private User author;
 }

@@ -7,6 +7,8 @@ import com.example.backend.api.exception.NotFoundException;
 import com.example.backend.story.entity.Category;
 import com.example.backend.story.entity.Project;
 import com.example.backend.story.entity.Task;
+import com.example.backend.story.enums.Priority;
+import com.example.backend.story.enums.Status;
 import com.example.backend.story.repository.TaskRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -82,15 +84,33 @@ public class TaskService {
     }
 
     @Cacheable(cacheNames = "tasksByCategoryId", key = "#id")
-    public Page<Task> readAllTaskByCategoryId(Long id,PageRequest pageRequest){
-        categoryService.readCategoryById(id);
-        return taskRepository.findByCategoryIdAndStatusTrue(id,pageRequest);
+    public Page<Task> readAllTaskByCategoryId(Long id, String status, String priority, PageRequest pageRequest){
+        try{
+            Status statusEnum = Status.valueOf(status.toUpperCase());
+            Priority priorityEnum = Priority.valueOf(priority.toUpperCase());
+
+            categoryService.readCategoryById(id);
+
+            return taskRepository.findByCategoryIdAndStatusAndPriority(id,statusEnum,priorityEnum,pageRequest);
+        }
+        catch (IllegalArgumentException ex) {
+            throw new BadRequestException(ex.getMessage());
+        }
     }
 
     @Cacheable(cacheNames = "tasksByProjectId", key = "#id")
-    public Page<Task> readAllTaskByProjectId(Long id,PageRequest pageRequest) {
-        projectService.readProjectById(id);
-        return taskRepository.findByProjectIdAndStatusTrue(id,pageRequest);
+    public Page<Task> readAllTaskByProjectId(Long id,String status, String priority,PageRequest pageRequest) {
+        try{
+            Status statusEnum = Status.valueOf(status.toUpperCase());
+            Priority priorityEnum = Priority.valueOf(priority.toUpperCase());
+
+            projectService.readProjectById(id);
+
+            return taskRepository.findByProjectIdAndStatusAndPriority(id,statusEnum,priorityEnum,pageRequest);
+        }
+        catch (IllegalArgumentException ex) {
+            throw new BadRequestException(ex.getMessage());
+        }
     }
 
     @Caching(evict = { @CacheEvict(cacheNames = "task", key = "#task.id"),
@@ -155,9 +175,4 @@ public class TaskService {
         readTaskById(id);
         taskRepository.deleteById(id);
     }
-
-//    private List<Task> sortingListTask(List<Task> tasks){
-//        tasks.sort(Comparator.comparing(Task::getPriority));
-//        return tasks;
-//    }
 }
