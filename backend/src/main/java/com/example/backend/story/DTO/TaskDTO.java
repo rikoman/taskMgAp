@@ -1,5 +1,7 @@
 package com.example.backend.story.DTO;
 
+import com.example.backend.story.enums.Priority;
+import com.example.backend.story.enums.Status;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,9 +11,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class TaskDTO {
     private String title;
-    private Boolean status;
+    private Status status;
     private String description;
-    private Integer priority;
+    private Priority priority;
     private Long projectId;
     private Long categoryId;
     private Long parentId;

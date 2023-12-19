@@ -1,5 +1,7 @@
 package com.example.backend.story.entity;
 
+import com.example.backend.story.enums.Priority;
+import com.example.backend.story.enums.Status;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import jakarta.persistence.*;
@@ -21,9 +23,11 @@ public class Task implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String title;
-    private Boolean status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
     private String description;
-    private Integer priority;
+    @Enumerated(EnumType.STRING)
+    private Priority priority;
     @ManyToOne
     @JoinColumn(name = "project_id")
     @JsonIdentityReference(alwaysAsId = true)
@@ -36,6 +40,9 @@ public class Task implements Serializable {
     @JoinColumn(name = "parent_id")
     @JsonIdentityReference(alwaysAsId = true)
     private Task parent;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd") //   Переименовать
     private LocalDate dateCreate;
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private User author;
 }

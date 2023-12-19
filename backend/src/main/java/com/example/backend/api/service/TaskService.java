@@ -1,5 +1,6 @@
 package com.example.backend.api.service;
 
+import com.example.backend.api.component.CustomUserPrincipal;
 import com.example.backend.story.DTO.TaskDTO;
 import com.example.backend.api.exception.BadRequestException;
 import com.example.backend.api.exception.NotFoundException;
@@ -13,6 +14,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -24,9 +26,11 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final CategoryService categoryService;
     private final ProjectService projectService;
+    private final UserService userService;
+    private final CustomUserPrincipal customUserPrincipal;
 
     @CacheEvict(cacheNames = {"tasks", "tasksByStatusFalse", "tasksByProjectId", "taskByCategoryId" }, allEntries = true)
-    public Task createTask(TaskDTO dto){
+    public Task createTask(TaskDTO dto, Authentication authentication){
         if(dto.getTitle() == null || dto.getStatus() == null){
             throw new BadRequestException("Invalid request");
         }
@@ -56,6 +60,7 @@ public class TaskService {
                 .category(category)
                 .dateCreate(dto.getDateCreate())
                 .parent(parentTask)
+                .author(userService.readUserById(customUserPrincipal.getUserDetails(authentication).getId()))
                 .build();
 
         return taskRepository.save(task);
