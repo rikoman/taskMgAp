@@ -4,9 +4,9 @@ import com.example.backend.story.DTO.CategoryDTO;
 import com.example.backend.api.service.CategoryService;
 import com.example.backend.api.service.UserService;
 import com.example.backend.story.entity.Project;
-import com.example.backend.story.entity.user.ERole;
-import com.example.backend.story.entity.user.Role;
-import com.example.backend.story.entity.user.User;
+import com.example.backend.story.enums.ERole;
+import com.example.backend.story.entity.Role;
+import com.example.backend.story.entity.User;
 import com.example.backend.story.repository.ProjectRepository;
 import com.example.backend.story.repository.RoleRepository;
 import com.example.backend.story.repository.UserRepository;
@@ -16,11 +16,12 @@ import com.example.backend.security.pojo.LoginRequest;
 import com.example.backend.security.pojo.MessageResponse;
 import com.example.backend.security.pojo.SignupRequest;
 import com.example.backend.security.service.UserDetailsImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -33,31 +34,17 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*", maxAge = 3600)
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    AuthenticationManager authenticationManager;
-
-    @Autowired
-    UserRepository userRespository;
-
-    @Autowired
-    RoleRepository roleRepository;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
-    @Autowired
-    JwtUtils jwtUtils;
-
-    @Autowired
-    CategoryService categoryService;
-
-    @Autowired
-    UserService userService;
-
-    @Autowired
-    ProjectRepository projectRepository;
+    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtils jwtUtils;
+    private final CategoryService categoryService;
+    private final UserService userService;
+    private final ProjectRepository projectRepository;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authUser(@RequestBody LoginRequest loginRequest) {
@@ -71,7 +58,7 @@ public class AuthController {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
+                .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(new JwtResponse(jwt,
@@ -83,7 +70,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
-        if (userRespository.existsByUsername(signupRequest.getUsername())) {
+        if (userRepository.existsByUsername(signupRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Username is exist"));
@@ -127,7 +114,7 @@ public class AuthController {
         }
 
         user.setRoles(roles);
-        userRespository.save(user);
+        userRepository.save(user);
         createDefaultProjectAndCategories(user.getId());
         return ResponseEntity.ok(new MessageResponse("User CREATED"));
     }
