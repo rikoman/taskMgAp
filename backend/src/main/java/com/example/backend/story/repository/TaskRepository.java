@@ -1,17 +1,17 @@
 package com.example.backend.story.repository;
 
 import com.example.backend.story.entity.Task;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 public interface TaskRepository extends JpaRepository<Task,Long> {
-     List<Task> findByProjectIdAndStatusTrue(Long id);
+     Page<Task> findByProjectIdAndStatusTrue(Long id, PageRequest pageRequest);
 
-     List<Task> findByCategoryIdAndStatusTrue(Long id);
+     Page<Task> findByCategoryIdAndStatusTrue(Long id, PageRequest pageRequest);
 
-     List<Task> findByStatusFalse();
+     Page<Task> findByStatusFalse(PageRequest pageRequest);
 
 }

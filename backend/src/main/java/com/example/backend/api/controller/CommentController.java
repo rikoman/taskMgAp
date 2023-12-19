@@ -1,14 +1,16 @@
 package com.example.backend.api.controller;
 
+import com.example.backend.api.component.MappingResponse;
+import com.example.backend.api.component.PageData;
 import com.example.backend.story.DTO.CommentDTO;
 import com.example.backend.api.service.CommentService;
+import com.example.backend.story.DTO.PageDataDTO;
 import com.example.backend.story.entity.Comment;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/comments")
@@ -16,8 +18,8 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService service;
-
     private final MappingResponse<Comment> mappingResponse;
+    private final PageData<Comment> pageData;
 
     @PostMapping()
     public ResponseEntity<Comment> createComment(@RequestBody CommentDTO dto){
@@ -25,23 +27,38 @@ public class CommentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Comment>> readAllComment(){
-        return mappingResponse.listEntity(service.readAllComment());
+    public ResponseEntity<PageDataDTO<Comment>> readAllComment(
+            @RequestParam(required = false,defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size
+    ){
+        return mappingResponse.listEntity(pageData.pageDataDTO(service.readAllComment(PageRequest.of(page, size))));
     }
 
     @GetMapping("/project/{id}")
-    public ResponseEntity<List<Comment>> readAllCommentByProjectId(@PathVariable Long id){
-        return mappingResponse.listEntity(service.readAllCommentByProjectId(id));
+    public ResponseEntity<PageDataDTO<Comment>> readAllCommentByProjectId(
+            @PathVariable Long id,
+            @RequestParam(required = false,defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size
+    ){
+        return mappingResponse.listEntity(pageData.pageDataDTO(service.readAllCommentByProjectId(id,PageRequest.of(page,size))));
     }
 
     @GetMapping("/category/{id}")
-    public ResponseEntity<List<Comment>> readAllCommentByCategoryId(@PathVariable Long id){
-        return mappingResponse.listEntity(service.readAllCommentByCategoryId(id));
+    public ResponseEntity<PageDataDTO<Comment>> readAllCommentByCategoryId(
+            @PathVariable Long id,
+            @RequestParam(required = false,defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size
+    ){
+        return mappingResponse.listEntity(pageData.pageDataDTO(service.readAllCommentByCategoryId(id,PageRequest.of(page,size))));
     }
 
     @GetMapping("/task/{id}")
-    public ResponseEntity<List<Comment>> readAllCommentByTaskId(@PathVariable Long id){
-        return mappingResponse.listEntity(service.readAllCommentByTaskId(id));
+    public ResponseEntity<PageDataDTO<Comment>> readAllCommentByTaskId(
+            @PathVariable Long id,
+            @RequestParam(required = false,defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size
+    ){
+        return mappingResponse.listEntity(pageData.pageDataDTO(service.readAllCommentByTaskId(id, PageRequest.of(page,size))));
     }
 
     @PutMapping

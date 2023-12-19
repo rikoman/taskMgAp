@@ -1,23 +1,25 @@
 package com.example.backend.api.controller;
 
+import com.example.backend.api.component.MappingResponse;
+import com.example.backend.api.component.PageData;
 import com.example.backend.story.DTO.CategoryDTO;
+import com.example.backend.story.DTO.PageDataDTO;
 import com.example.backend.story.entity.Category;
 import com.example.backend.api.service.CategoryService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/categories")
 public class CategoryController {
 
     private final CategoryService categoryService;
-
     private final MappingResponse<Category> mappingResponse;
+    private final PageData<Category> pageData;
 
     @PostMapping
     public ResponseEntity<Category> createCategory(@RequestBody CategoryDTO dto){
@@ -25,8 +27,11 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Category>> readAllCategory(){
-        return mappingResponse.listEntity(categoryService.readAllCategory());
+    public ResponseEntity<PageDataDTO<Category>> readAllCategory(
+            @RequestParam(required = false,defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size
+    ){
+        return mappingResponse.listEntity(pageData.pageDataDTO(categoryService.readAllCategory(PageRequest.of(page, size))));
     }
 
     @GetMapping("/data/{id}")
@@ -35,8 +40,12 @@ public class CategoryController {
     }
 
     @GetMapping("/project/{id}")
-    public ResponseEntity<List<Category>> readAllCategoryByProjectId(@PathVariable Long id){
-        return mappingResponse.listEntity(categoryService.readAllCategoryByProjectId(id));
+    public ResponseEntity<PageDataDTO<Category>> readAllCategoryByProjectId(
+            @PathVariable Long id,
+            @RequestParam(required = false,defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size
+    ){
+        return mappingResponse.listEntity(pageData.pageDataDTO(categoryService.readAllCategoryByProjectId(id,PageRequest.of(page,size))));
     }
 
     @PutMapping

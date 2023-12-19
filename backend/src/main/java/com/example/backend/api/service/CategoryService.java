@@ -9,9 +9,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -33,8 +33,8 @@ public class CategoryService {
     }
 
     @Cacheable(cacheNames = "categories")
-    public List<Category> readAllCategory(){
-        return categoryRepository.findAll();
+    public Page<Category> readAllCategory(PageRequest pageRequest){
+        return categoryRepository.findAll(pageRequest);
     }
 
     @Cacheable(cacheNames = "category", key = "#id")
@@ -43,9 +43,9 @@ public class CategoryService {
     }
 
     @Cacheable(cacheNames = "categoriesByProjectId",key = "#id")
-    public List<Category> readAllCategoryByProjectId(Long id){
+    public Page<Category> readAllCategoryByProjectId(Long id, PageRequest pageRequest){
         projectService.readProjectById(id);
-        return categoryRepository.findByProjectId(id);
+        return categoryRepository.findByProjectId(id, pageRequest);
     }
 
     @Caching(evict = { @CacheEvict(cacheNames = "category", key = "#category.id"),

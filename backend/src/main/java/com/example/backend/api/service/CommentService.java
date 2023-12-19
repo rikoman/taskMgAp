@@ -8,17 +8,18 @@ import com.example.backend.story.entity.Comment;
 import com.example.backend.story.entity.Project;
 import com.example.backend.story.entity.Task;
 import com.example.backend.story.repository.CommentRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CommentService {
 
     private final CommentRepository commentRepository;
@@ -56,26 +57,26 @@ public class CommentService {
     }
 
     @Cacheable(cacheNames = "comments")
-    public List<Comment> readAllComment(){
-        return commentRepository.findAll();
+    public Page<Comment> readAllComment(PageRequest pageRequest){
+        return commentRepository.findAll(pageRequest);
     }
 
     @Cacheable(cacheNames = "commentsByProjectId", key = "#id")
-    public List<Comment> readAllCommentByProjectId(Long id){
+    public Page<Comment> readAllCommentByProjectId(Long id, PageRequest pageRequest){
         projectService.readProjectById(id);
-        return commentRepository.findByProjectId(id);
+        return commentRepository.findByProjectId(id, pageRequest);
     }
 
     @Cacheable(cacheNames = "commentsByCategoryId", key = "#id")
-    public List<Comment> readAllCommentByCategoryId(Long id){
+    public Page<Comment> readAllCommentByCategoryId(Long id, PageRequest pageRequest){
         categoryService.readCategoryById(id);
-        return commentRepository.findByCategoryId(id);
+        return commentRepository.findByCategoryId(id, pageRequest);
     }
 
     @Cacheable(cacheNames = "commentsByTaskId", key = "#id")
-    public List<Comment> readAllCommentByTaskId(Long id){
+    public Page<Comment> readAllCommentByTaskId(Long id, PageRequest pageRequest){
         taskService.readTaskById(id);
-        return commentRepository.findByTaskId(id);
+        return commentRepository.findByTaskId(id, pageRequest);
     }
 
     @Caching(evict = { @CacheEvict(cacheNames = "comment", key = "#comment.id"),

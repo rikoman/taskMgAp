@@ -1,24 +1,27 @@
 package com.example.backend.api.controller;
 
+import com.example.backend.api.component.MappingResponse;
+import com.example.backend.api.component.PageData;
+import com.example.backend.story.DTO.PageDataDTO;
 import com.example.backend.story.DTO.TaskDTO;
 import com.example.backend.story.entity.Task;
 import com.example.backend.api.service.TaskService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
-import java.util.List;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/tasks")
 public class TaskController {
 
     private final TaskService taskService;
-
     private final MappingResponse<Task> mappingResponse;
+    private final PageData<Task> pageData;
 
     @PostMapping
     public ResponseEntity<Task> createTask(@RequestBody TaskDTO dto) throws ParseException {
@@ -26,13 +29,19 @@ public class TaskController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Task>> readAllTask(){
-        return mappingResponse.listEntity(taskService.readAllTask());
+    public ResponseEntity<PageDataDTO<Task>> readAllTask(
+            @RequestParam(required = false,defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size
+    ){
+        return mappingResponse.listEntity(pageData.pageDataDTO(taskService.readAllTask(PageRequest.of(page, size))));
     }
 
     @GetMapping("/false")
-    public ResponseEntity<List<Task>> readAllTaskByStatusFalse(){
-        return mappingResponse.listEntity(taskService.readAllTaskByStatusFalse());
+    public ResponseEntity<PageDataDTO<Task>> readAllTaskByStatusFalse(
+            @RequestParam(required = false,defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size
+    ){
+        return mappingResponse.listEntity(pageData.pageDataDTO(taskService.readAllTaskByStatusFalse(PageRequest.of(page, size))));
     }
 
     @GetMapping("/data/{id}")
@@ -41,13 +50,21 @@ public class TaskController {
     }
 
     @GetMapping("/category/{id}")
-    public ResponseEntity<List<Task>> readAllTaskByCategoryId(@PathVariable Long id){
-        return mappingResponse.listEntity(taskService.readAllTaskByCategoryId(id));
+    public ResponseEntity<PageDataDTO<Task>> readAllTaskByCategoryId(
+            @PathVariable Long id,
+            @RequestParam(required = false,defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size
+    ){
+        return mappingResponse.listEntity(pageData.pageDataDTO(taskService.readAllTaskByCategoryId(id,PageRequest.of(page,size))));
     }
 
     @GetMapping("/project/{id}")
-    public ResponseEntity<List<Task>> readAlTaskByProjectId(@PathVariable Long id){
-        return mappingResponse.listEntity(taskService.readAllTaskByProjectId(id));
+    public ResponseEntity<PageDataDTO<Task>> readAlTaskByProjectId(
+            @PathVariable Long id,
+            @RequestParam(required = false,defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size
+    ){
+        return mappingResponse.listEntity(pageData.pageDataDTO(taskService.readAllTaskByProjectId(id,PageRequest.of(page, size))));
     }
 
     @PutMapping

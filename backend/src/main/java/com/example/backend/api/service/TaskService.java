@@ -11,11 +11,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -62,13 +62,13 @@ public class TaskService {
     }
 
     @Cacheable(cacheNames = "tasks")
-    public List<Task> readAllTask(){
-        return taskRepository.findAll();
+    public Page<Task> readAllTask(PageRequest pageRequest){
+        return taskRepository.findAll(pageRequest);
     }
 
     @Cacheable(cacheNames = "tasksByStatusFalse")
-    public List<Task> readAllTaskByStatusFalse(){
-        return taskRepository.findByStatusFalse();
+    public Page<Task> readAllTaskByStatusFalse(PageRequest pageRequest){
+        return taskRepository.findByStatusFalse(pageRequest);
     }
 
     @Cacheable(cacheNames = "task", key = "#id")
@@ -77,15 +77,15 @@ public class TaskService {
     }
 
     @Cacheable(cacheNames = "tasksByCategoryId", key = "#id")
-    public List<Task> readAllTaskByCategoryId(Long id){
+    public Page<Task> readAllTaskByCategoryId(Long id,PageRequest pageRequest){
         categoryService.readCategoryById(id);
-        return sortingListTask(taskRepository.findByCategoryIdAndStatusTrue(id));
+        return taskRepository.findByCategoryIdAndStatusTrue(id,pageRequest);
     }
 
     @Cacheable(cacheNames = "tasksByProjectId", key = "#id")
-    public List<Task> readAllTaskByProjectId(Long id) {
+    public Page<Task> readAllTaskByProjectId(Long id,PageRequest pageRequest) {
         projectService.readProjectById(id);
-        return sortingListTask(taskRepository.findByProjectIdAndStatusTrue(id));
+        return taskRepository.findByProjectIdAndStatusTrue(id,pageRequest);
     }
 
     @Caching(evict = { @CacheEvict(cacheNames = "task", key = "#task.id"),
@@ -151,8 +151,8 @@ public class TaskService {
         taskRepository.deleteById(id);
     }
 
-    private List<Task> sortingListTask(List<Task> tasks){
-        tasks.sort(Comparator.comparing(Task::getPriority));
-        return tasks;
-    }
+//    private List<Task> sortingListTask(List<Task> tasks){
+//        tasks.sort(Comparator.comparing(Task::getPriority));
+//        return tasks;
+//    }
 }

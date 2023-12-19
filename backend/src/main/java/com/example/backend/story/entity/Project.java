@@ -1,6 +1,5 @@
 package com.example.backend.story.entity;
 
-import com.example.backend.story.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

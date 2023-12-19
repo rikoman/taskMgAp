@@ -4,12 +4,14 @@ import com.example.backend.story.DTO.ProjectDTO;
 import com.example.backend.api.exception.BadRequestException;
 import com.example.backend.api.exception.NotFoundException;
 import com.example.backend.story.entity.Project;
-import com.example.backend.story.entity.user.User;
+import com.example.backend.story.entity.User;
 import com.example.backend.story.repository.ProjectRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,8 +37,8 @@ public class ProjectService {
     }
 
     @Cacheable(cacheNames = "projects")
-    public List<Project> readAllProject(){
-        return projectRepository.findAll();
+    public Page<Project> readAllProject(PageRequest pageRequest){
+        return projectRepository.findAll(pageRequest);
     }
 
     @Cacheable(cacheNames = "project", key = "#id")
@@ -45,9 +47,9 @@ public class ProjectService {
     }
 
     @Cacheable(cacheNames = "projectsByUserId", key = "#id")
-    public List<Project> readAllProjectByUserId(Long id){
+    public Page<Project> readAllProjectByUserId(Long id,PageRequest pageRequest){
         userService.readUserById(id);
-        return projectRepository.findByUsersId(id);
+        return projectRepository.findByUsersId(id,pageRequest);
     }
 
     @Caching(evict = { @CacheEvict(cacheNames = "project", key = "#project.id"),
