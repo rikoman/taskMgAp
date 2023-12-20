@@ -25,9 +25,6 @@ public class ProjectService {
 
     @CacheEvict(cacheNames = {"projects", "projectsByUserId"}, allEntries = true)
     public Project createProject(ProjectDTO dto){
-        if(dto.getTitle() == null || dto.getUsersId() == null ){
-            throw new BadRequestException("Invalid request");
-        }
         Project project = Project.builder()
                 .title(dto.getTitle())
                 .description(dto.getDescription())

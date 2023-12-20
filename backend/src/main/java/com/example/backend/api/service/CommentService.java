@@ -33,10 +33,6 @@ public class CommentService {
     public Comment createComment(CommentDTO dto, Authentication authentication){
         Task task = taskService.readTaskById(dto.getTaskId());
 
-        if(dto.getContent()==null){
-            throw new BadRequestException("Invalid request");
-        }
-
         Comment comment = Comment.builder()
                 .content(dto.getContent())
                 .task(task)

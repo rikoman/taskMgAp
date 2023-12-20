@@ -1,7 +1,6 @@
 package com.example.backend.api.service;
 
 import com.example.backend.story.DTO.CategoryDTO;
-import com.example.backend.api.exception.BadRequestException;
 import com.example.backend.api.exception.NotFoundException;
 import com.example.backend.story.entity.Category;
 import com.example.backend.story.entity.Project;
@@ -23,8 +22,6 @@ public class CategoryService {
 
     @CacheEvict(cacheNames = {"categories", "categoriesByProjectId"}, allEntries = true)
     public Category createCategory(CategoryDTO dto){
-        if(dto.getTitle() == null || dto.getProjectId() == null) throw new BadRequestException("Invalid request");
-
         Category category = Category.builder()
                 .title(dto.getTitle())
                 .description(dto.getDescription())

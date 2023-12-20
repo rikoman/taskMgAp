@@ -33,10 +33,6 @@ public class TaskService {
 
     @CacheEvict(cacheNames = {"tasks", "tasksByStatusFalse", "tasksByProjectId", "taskByCategoryId" }, allEntries = true)
     public Task createTask(TaskDTO dto, Authentication authentication){
-        if(dto.getTitle() == null || dto.getStatus() == null){
-            throw new BadRequestException("Invalid request");
-        }
-
         if(dto.getProjectId() == null && dto.getCategoryId() == null && dto.getParentId() == null){
             throw new BadRequestException("Invalid request");
         }
