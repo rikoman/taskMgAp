@@ -78,8 +78,8 @@ public class TaskController {
 //    }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Task> updatePartInfoForTask(@PathVariable Long id, @RequestBody TaskDTO dto){
-        return mappingResponse.entity(taskService.updatePartInfoForTask(id, dto));
+    public ResponseEntity<Task> updatePartInfoForTask(@PathVariable Long id, @RequestBody TaskDTO dto,Authentication authentication){
+        return mappingResponse.entity(taskService.updatePartInfoForTask(id, dto, authentication));
     }
 
     @DeleteMapping("/{id}")

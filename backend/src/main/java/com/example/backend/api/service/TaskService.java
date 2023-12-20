@@ -7,6 +7,7 @@ import com.example.backend.api.exception.NotFoundException;
 import com.example.backend.story.entity.Category;
 import com.example.backend.story.entity.Project;
 import com.example.backend.story.entity.Task;
+import com.example.backend.story.entity.User;
 import com.example.backend.story.enums.Priority;
 import com.example.backend.story.enums.Status;
 import com.example.backend.story.repository.TaskRepository;
@@ -41,9 +42,11 @@ public class TaskService {
             throw new BadRequestException("Invalid request");
         }
 
-        if(dto.getDateCreate()== null){
-            dto.setDateCreate(LocalDate.now());
+        if(dto.getDate()== null){
+            dto.setDate(LocalDate.now());
         }
+
+        User executor = dto.getExecutorId() !=null ? userService.readUserById(dto.getExecutorId()):userService.readUserById(getUserIdPrincipal(authentication));
 
         Category category = dto.getCategoryId() != null ? categoryService.readCategoryById(dto.getCategoryId()) : null;
         Project project = dto.getProjectId() != null ? projectService.readProjectById(dto.getProjectId()) : null;
@@ -56,9 +59,10 @@ public class TaskService {
                 .priority(dto.getPriority())
                 .project(project)
                 .category(category)
-                .dateCreate(dto.getDateCreate())
+                .date(dto.getDate())
                 .parent(parentTask)
-                .author(userService.readUserById(customUserPrincipal.getUserDetails(authentication).getId()))
+                .author(userService.readUserById(getUserIdPrincipal(authentication)))
+                .executor(executor)
                 .build();
 
         return taskRepository.save(task);
@@ -129,38 +133,34 @@ public class TaskService {
 
     @Caching(evict = { @CacheEvict(cacheNames = "task", key = "#task.id"),
                        @CacheEvict(cacheNames = {"tasks", "tasksByStatusFalse", "tasksByProjectId", "taskByCategoryId" }, allEntries = true)})
-    public Task updatePartInfoForTask(Long id, TaskDTO dto){
+    public Task updatePartInfoForTask(Long id, TaskDTO dto,Authentication authentication){
         Task existTask = readTaskById(id);
 
-        if(dto.getTitle() != null){
-            existTask.setTitle(dto.getTitle());
+        if(!existTask.getAuthor().getId().equals(getUserIdPrincipal(authentication)) && !existTask.getExecutor().getId().equals(getUserIdPrincipal(authentication))){
+            throw new BadRequestException("Вы не являетесь автором или исполнителем");
+        }
+        if(existTask.getAuthor().getId().equals(getUserIdPrincipal(authentication))) {
+            if (dto.getTitle() != null) existTask.setTitle(dto.getTitle());
+            if (dto.getDescription() != null) existTask.setDescription(dto.getDescription());
+            if (dto.getPriority() != null) existTask.setPriority(dto.getPriority());
+            if (dto.getStatus() != null) existTask.setStatus(dto.getStatus());
+            if (dto.getProjectId() != null) {
+                Project existProject = projectService.readProjectById(dto.getProjectId());
+                existTask.setProject(existProject);
+            }
+            if (dto.getCategoryId() != null) {
+                Category existCategory = categoryService.readCategoryById(dto.getCategoryId());
+                existTask.setCategory(existCategory);
+            }
+            if (dto.getParentId() != null) {
+                Task existParentTask = readTaskById(dto.getParentId());
+                existTask.setParent(existParentTask);
+            }
         }
 
-        if(dto.getDescription() != null){
-            existTask.setDescription(dto.getDescription());
-        }
-
-        if(dto.getPriority() != null){
-            existTask.setPriority(dto.getPriority());
-        }
-
-        if(dto.getStatus() != null){
-            existTask.setStatus(dto.getStatus());
-        }
-
-        if(dto.getProjectId() != null){
-            Project existProject = projectService.readProjectById(dto.getProjectId());
-            existTask.setProject(existProject);
-        }
-
-        if(dto.getCategoryId() != null){
-            Category existCategory = categoryService.readCategoryById(dto.getCategoryId());
-            existTask.setCategory(existCategory);
-        }
-
-        if(dto.getParentId() != null){
-            Task existParentTask = readTaskById(dto.getParentId());
-            existTask.setParent(existParentTask);
+        if(existTask.getExecutor().getId().equals(getUserIdPrincipal(authentication))){
+            if(dto.getTitle()!= null || dto.getDescription()!=null || dto.getExecutorId()!=null || dto.getPriority()!=null)
+                throw new BadRequestException("Вы не можете обновить поля, кроме поля status");
         }
 
         return taskRepository.save(existTask);
@@ -171,5 +171,9 @@ public class TaskService {
     public void deleteTask(Long id){
         readTaskById(id);
         taskRepository.deleteById(id);
+    }
+
+    private Long getUserIdPrincipal(Authentication authentication){
+        return customUserPrincipal.getUserDetails(authentication).getId();
     }
 }

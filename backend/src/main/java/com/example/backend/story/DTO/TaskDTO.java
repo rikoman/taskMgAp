@@ -17,5 +17,6 @@ public class TaskDTO {
     private Long projectId;
     private Long categoryId;
     private Long parentId;
-    private LocalDate dateCreate;
+    private LocalDate date;
+    private Long executorId;
 }
