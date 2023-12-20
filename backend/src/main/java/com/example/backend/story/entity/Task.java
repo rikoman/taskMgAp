@@ -13,6 +13,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -52,4 +54,6 @@ public class Task implements Serializable {
     @JsonIdentityReference(alwaysAsId = true)
     @NotNull(message = "author not must empty")
     private User author;
+    @OneToMany(mappedBy = "task", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
 }

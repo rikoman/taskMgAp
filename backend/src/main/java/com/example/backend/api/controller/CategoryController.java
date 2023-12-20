@@ -48,14 +48,14 @@ public class CategoryController {
         return mappingResponse.listEntity(pageData.pageDataDTO(categoryService.readAllCategoryByProjectId(id,PageRequest.of(page,size))));
     }
 
-    @PutMapping
-    public ResponseEntity<Category> updateCategory(@RequestBody Category category){
-        return mappingResponse.entity(categoryService.updateCategory(category));
-    }
+//    @PutMapping
+//    public ResponseEntity<Category> updateCategory(@RequestBody Category category){
+//        return mappingResponse.entity(categoryService.updateCategory(category));
+//    }
 
-    @PatchMapping
-    public ResponseEntity<Category> updatePartInfo(@RequestBody Category category){
-        return mappingResponse.entity(categoryService.updatePartInfoForCategory(category));
+    @PatchMapping("/{id}")
+    public ResponseEntity<Category> updatePartInfo(@PathVariable Long id, @RequestBody CategoryDTO dto){
+        return mappingResponse.entity(categoryService.updatePartInfoForCategory(id,dto));
     }
 
     @DeleteMapping("/{id}")

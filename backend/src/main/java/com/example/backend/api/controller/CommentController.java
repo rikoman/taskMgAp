@@ -35,41 +35,9 @@ public class CommentController {
         return mappingResponse.listEntity(pageData.pageDataDTO(service.readAllComment(PageRequest.of(page, size))));
     }
 
-    @GetMapping("/project/{id}")
-    public ResponseEntity<PageDataDTO<Comment>> readAllCommentByProjectId(
-            @PathVariable Long id,
-            @RequestParam(required = false,defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "10") int size
-    ){
-        return mappingResponse.listEntity(pageData.pageDataDTO(service.readAllCommentByProjectId(id,PageRequest.of(page,size))));
-    }
-
-    @GetMapping("/category/{id}")
-    public ResponseEntity<PageDataDTO<Comment>> readAllCommentByCategoryId(
-            @PathVariable Long id,
-            @RequestParam(required = false,defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "10") int size
-    ){
-        return mappingResponse.listEntity(pageData.pageDataDTO(service.readAllCommentByCategoryId(id,PageRequest.of(page,size))));
-    }
-
-    @GetMapping("/task/{id}")
-    public ResponseEntity<PageDataDTO<Comment>> readAllCommentByTaskId(
-            @PathVariable Long id,
-            @RequestParam(required = false,defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "10") int size
-    ){
-        return mappingResponse.listEntity(pageData.pageDataDTO(service.readAllCommentByTaskId(id, PageRequest.of(page,size))));
-    }
-
-    @PutMapping
-    public ResponseEntity<Comment> updateComment(@RequestBody Comment comment){
-        return mappingResponse.entity(service.updateComment(comment));
-    }
-
-    @PatchMapping
-    public ResponseEntity<Comment> updatePartInfo(@RequestBody Comment comment){
-        return mappingResponse.entity(service.updatePartInfoForComment(comment));
+    @PatchMapping("/{id}")
+    public ResponseEntity<Comment> updatePartInfo(@PathVariable Long id, @RequestBody CommentDTO dto){
+        return mappingResponse.entity(service.updatePartInfoForComment(id, dto));
     }
 
     @DeleteMapping("/{id}")

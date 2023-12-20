@@ -27,23 +27,17 @@ public class Comment implements Serializable {
     private Long id;
     @NotBlank(message = "content not must blank")
     private String content;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "task_id")
     @JsonIdentityReference(alwaysAsId = true)
+    @NotNull(message = "task not must empty")
     private Task task;
-    @ManyToOne
-    @JoinColumn(name = "project_id")
-    @JsonIdentityReference(alwaysAsId = true)
-    private Project project;
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    @JsonIdentityReference(alwaysAsId = true)
-    private Category category;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @NotNull(message = "datePublication not must empty")
     private LocalDateTime datePublication;
     @ManyToOne
     @JoinColumn(name = "author_id")
     @NotNull(message = "author not must empty")
+    @JsonIdentityReference(alwaysAsId = true)
     private User author;
 }

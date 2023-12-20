@@ -4,6 +4,7 @@ import com.example.backend.story.DTO.CategoryDTO;
 import com.example.backend.api.exception.BadRequestException;
 import com.example.backend.api.exception.NotFoundException;
 import com.example.backend.story.entity.Category;
+import com.example.backend.story.entity.Project;
 import com.example.backend.story.repository.CategoryRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -48,29 +49,29 @@ public class CategoryService {
         return categoryRepository.findByProjectId(id, pageRequest);
     }
 
+//    @Caching(evict = { @CacheEvict(cacheNames = "category", key = "#category.id"),
+//                       @CacheEvict(cacheNames = {"categories", "categoriesByProjectId"}, allEntries = true)})
+//    public Category updateCategory(Category category){
+//        if(category.getId() == null || category.getTitle() == null || category.getProject() == null) throw new BadRequestException("Invalid request");
+//        return categoryRepository.save(category);
+//    }
+
     @Caching(evict = { @CacheEvict(cacheNames = "category", key = "#category.id"),
                        @CacheEvict(cacheNames = {"categories", "categoriesByProjectId"}, allEntries = true)})
-    public Category updateCategory(Category category){
-        if(category.getId() == null || category.getTitle() == null || category.getProject() == null) throw new BadRequestException("Invalid request");
-        return categoryRepository.save(category);
-    }
+    public Category updatePartInfoForCategory(Long id,CategoryDTO dto){
+        Category existCategory = readCategoryById(id);
 
-    @Caching(evict = { @CacheEvict(cacheNames = "category", key = "#category.id"),
-            @CacheEvict(cacheNames = {"categories", "categoriesByProjectId"}, allEntries = true)})
-    public Category updatePartInfoForCategory(Category category){
-        Category existCategory = readCategoryById(category.getId());
-
-        if(category.getTitle() != null){
-            existCategory.setTitle(category.getTitle());
+        if(dto.getTitle() != null){
+            existCategory.setTitle(dto.getTitle());
         }
 
-        if(category.getDescription() != null){
-            existCategory.setDescription(category.getDescription());
+        if(dto.getDescription() != null){
+            existCategory.setDescription(dto.getDescription());
         }
 
-        if(category.getProject() != null){
-            projectService.readProjectById(category.getProject().getId());
-            existCategory.setProject(category.getProject());
+        if(dto.getProjectId() != null){
+            Project existProject = projectService.readProjectById(dto.getProjectId());
+            existCategory.setProject(existProject);
         }
 
         return categoryRepository.save(existCategory);
