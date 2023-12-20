@@ -7,11 +7,9 @@ import com.example.backend.story.DTO.ProjectDTO;
 import com.example.backend.story.entity.Project;
 import com.example.backend.api.service.ProjectService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -50,14 +48,14 @@ public class ProjectController {
         return mappingResponse.listEntity(pageData.pageDataDTO(projectService.readAllProjectByUserId(id,PageRequest.of(page,size))));
     }
 
-    @PutMapping
-    public ResponseEntity<Project> update(@RequestBody Project project){
-        return mappingResponse.entity(projectService.updateProject(project));
-    }
+//    @PutMapping
+//    public ResponseEntity<Project> update(@RequestBody Project project){
+//        return mappingResponse.entity(projectService.updateProject(project));
+//    }
 
-    @PatchMapping
-    public ResponseEntity<Project> updatePartInfo(@RequestBody Project project){
-        return mappingResponse.entity(projectService.updatePartInfoForProject(project));
+    @PatchMapping("/{id}")
+    public ResponseEntity<Project> updatePartInfo(@PathVariable Long id, @RequestBody ProjectDTO dto){
+        return mappingResponse.entity(projectService.updatePartInfoForProject(id, dto));
     }
 
     @DeleteMapping("/{id}")

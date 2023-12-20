@@ -72,14 +72,14 @@ public class TaskController {
         return mappingResponse.listEntity(pageData.pageDataDTO(taskService.readAllTaskByProjectId(id,status,priority,PageRequest.of(page, size))));
     }
 
-    @PutMapping
-    public ResponseEntity<Task> updateTask(@RequestBody Task task){
-        return mappingResponse.entity(taskService.updateTask(task));
-    }
+//    @PutMapping
+//    public ResponseEntity<Task> updateTask(@RequestBody Task task){
+//        return mappingResponse.entity(taskService.updateTask(task));
+//    }
 
-    @PatchMapping
-    public ResponseEntity<Task> updatePartInfoForTask(@RequestBody Task task){
-        return mappingResponse.entity(taskService.updatePartInfoForTask(task));
+    @PatchMapping("/{id}")
+    public ResponseEntity<Task> updatePartInfoForTask(@PathVariable Long id, @RequestBody TaskDTO dto){
+        return mappingResponse.entity(taskService.updatePartInfoForTask(id, dto));
     }
 
     @DeleteMapping("/{id}")

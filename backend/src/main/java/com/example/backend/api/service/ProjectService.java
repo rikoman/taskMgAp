@@ -52,31 +52,31 @@ public class ProjectService {
         return projectRepository.findByUsersId(id,pageRequest);
     }
 
-    @Caching(evict = { @CacheEvict(cacheNames = "project", key = "#project.id"),
-                       @CacheEvict(cacheNames = {"projects", "projectsByUserId"}, allEntries = true)})
-    public Project updateProject(Project project){
-        if(project.getId() == null || project.getTitle() == null || project.getUsers() == null ){
-            throw new BadRequestException("Invalid request");
-        }
-        return projectRepository.save(project);
-    }
+//    @Caching(evict = { @CacheEvict(cacheNames = "project", key = "#project.id"),
+//                       @CacheEvict(cacheNames = {"projects", "projectsByUserId"}, allEntries = true)})
+//    public Project updateProject(Project project){
+//        if(project.getId() == null || project.getTitle() == null || project.getUsers() == null ){
+//            throw new BadRequestException("Invalid request");
+//        }
+//        return projectRepository.save(project);
+//    }
 
     @Caching(evict = { @CacheEvict(cacheNames = "project", key = "#project.id"),
             @CacheEvict(cacheNames = {"projects", "projectsByUserId"}, allEntries = true)})
-    public Project updatePartInfoForProject(Project project){
-        Project existProject = readProjectById(project.getId());
+    public Project updatePartInfoForProject(Long id, ProjectDTO dto){
+        Project existProject = readProjectById(id);
         List<User> newUsers = existProject.getUsers();
 
-        if(project.getTitle()!= null){
-            existProject.setTitle(project.getTitle());
+        if(dto.getTitle()!= null){
+            existProject.setTitle(dto.getTitle());
         }
 
-        if(project.getDescription()!=null){
-            existProject.setDescription(project.getDescription());
+        if(dto.getDescription()!=null){
+            existProject.setDescription(dto.getDescription());
         }
 
-        if(project.getUsers()!=null){
-            newUsers.addAll(project.getUsers());
+        if(dto.getUsersId()!=null){
+            newUsers.addAll(userService.readAllUserByIds(dto.getUsersId())); // изменить данное условие
             existProject.setUsers(newUsers);
         }
         return projectRepository.save(existProject);

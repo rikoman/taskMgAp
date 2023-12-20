@@ -113,59 +113,60 @@ public class TaskService {
         }
     }
 
+//    @Caching(evict = { @CacheEvict(cacheNames = "task", key = "#task.id"),
+//                       @CacheEvict(cacheNames = {"tasks", "tasksByStatusFalse", "tasksByProjectId", "taskByCategoryId" }, allEntries = true)})
+//    public Task updateTask(Task task){
+//        if(task.getId() == null || task.getTitle() == null || task.getStatus() == null){
+//            throw new BadRequestException("Invalid request");
+//        }
+//
+//        if(task.getProject() == null && task.getCategory() == null && task.getParent() == null){
+//            throw new BadRequestException("Invalid request");
+//        }
+//
+//        if ((task.getProject() != null && task.getCategory() != null) || (task.getProject() != null && task.getParent() != null) || (task.getCategory() != null && task.getParent() != null)){
+//            throw new BadRequestException("Invalid request");
+//        }
+//
+//        return taskRepository.save(task);
+//    }
+
     @Caching(evict = { @CacheEvict(cacheNames = "task", key = "#task.id"),
                        @CacheEvict(cacheNames = {"tasks", "tasksByStatusFalse", "tasksByProjectId", "taskByCategoryId" }, allEntries = true)})
-    public Task updateTask(Task task){
-        if(task.getId() == null || task.getTitle() == null || task.getStatus() == null){
-            throw new BadRequestException("Invalid request");
+    public Task updatePartInfoForTask(Long id, TaskDTO dto){
+        Task existTask = readTaskById(id);
+
+        if(dto.getTitle() != null){
+            existTask.setTitle(dto.getTitle());
         }
 
-        if(task.getProject() == null && task.getCategory() == null && task.getParent() == null){
-            throw new BadRequestException("Invalid request");
+        if(dto.getDescription() != null){
+            existTask.setDescription(dto.getDescription());
         }
 
-        if ((task.getProject() != null && task.getCategory() != null) || (task.getProject() != null && task.getParent() != null) || (task.getCategory() != null && task.getParent() != null)){
-            throw new BadRequestException("Invalid request");
+        if(dto.getPriority() != null){
+            existTask.setPriority(dto.getPriority());
         }
 
-        return taskRepository.save(task);
-    }
-
-    @Caching(evict = { @CacheEvict(cacheNames = "task", key = "#task.id"),
-            @CacheEvict(cacheNames = {"tasks", "tasksByStatusFalse", "tasksByProjectId", "taskByCategoryId" }, allEntries = true)})
-    public Task updatePartInfoForTask(Task task){
-        Task existTask = readTaskById(task.getId());
-
-        if(task.getTitle() != null){
-            existTask.setTitle(task.getTitle());
+        if(dto.getStatus() != null){
+            existTask.setStatus(dto.getStatus());
         }
 
-        if(task.getDescription() != null){
-            existTask.setDescription(task.getDescription());
+        if(dto.getProjectId() != null){
+            Project existProject = projectService.readProjectById(dto.getProjectId());
+            existTask.setProject(existProject);
         }
 
-        if(task.getPriority() != null){
-            existTask.setPriority(task.getPriority());
+        if(dto.getCategoryId() != null){
+            Category existCategory = categoryService.readCategoryById(dto.getCategoryId());
+            existTask.setCategory(existCategory);
         }
 
-        if(task.getStatus() != null){
-            existTask.setStatus(task.getStatus());
+        if(dto.getParentId() != null){
+            Task existParentTask = readTaskById(dto.getParentId());
+            existTask.setParent(existParentTask);
         }
 
-        if(task.getProject() != null){
-            projectService.readProjectById(task.getProject().getId());
-            existTask.setProject(task.getProject());
-        }
-
-        if(task.getCategory() != null){
-            categoryService.readCategoryById(task.getCategory().getId());
-            existTask.setCategory(task.getCategory());
-        }
-
-        if(task.getParent() != null){
-            readTaskById(task.getId());
-            existTask.setParent(task.getParent());
-        }
         return taskRepository.save(existTask);
     }
 
