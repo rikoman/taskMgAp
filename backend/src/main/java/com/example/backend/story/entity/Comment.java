@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +25,7 @@ public class Comment implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+    @NotBlank(message = "content not must blank")
     private String content;
     @ManyToOne
     @JoinColumn(name = "task_id")
@@ -37,8 +40,10 @@ public class Comment implements Serializable {
     @JsonIdentityReference(alwaysAsId = true)
     private Category category;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @NotNull(message = "datePublication not must empty")
     private LocalDateTime datePublication;
     @ManyToOne
     @JoinColumn(name = "author_id")
+    @NotNull(message = "author not must empty")
     private User author;
 }
