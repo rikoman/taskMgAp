@@ -36,13 +36,13 @@ public class CommentController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Comment> updatePartInfo(@PathVariable Long id, @RequestBody CommentDTO dto){
-        return mappingResponse.entity(service.updatePartInfoForComment(id, dto));
+    public ResponseEntity<Comment> updatePartInfo(@PathVariable Long id, @RequestBody CommentDTO dto,Authentication authentication){
+        return mappingResponse.entity(service.updatePartInfoForComment(id, dto, authentication));
     }
 
     @DeleteMapping("/{id}")
-    public HttpStatus deleteComment(@PathVariable Long id){
-        service.deleteComment(id);
+    public HttpStatus deleteComment(@PathVariable Long id, Authentication authentication){
+        service.deleteComment(id, authentication);
         return HttpStatus.OK;
     }
 }

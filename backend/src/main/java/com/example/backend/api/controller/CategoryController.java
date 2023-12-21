@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,8 +23,8 @@ public class CategoryController {
     private final PageData<Category> pageData;
 
     @PostMapping
-    public ResponseEntity<Category> createCategory(@RequestBody CategoryDTO dto){
-        return mappingResponse.entity(categoryService.createCategory(dto));
+    public ResponseEntity<Category> createCategory(@RequestBody CategoryDTO dto, Authentication authentication){
+        return mappingResponse.entity(categoryService.createCategory(dto, authentication));
     }
 
     @GetMapping
@@ -35,17 +36,18 @@ public class CategoryController {
     }
 
     @GetMapping("/data/{id}")
-    public ResponseEntity<Category> readById(@PathVariable Long id){
-        return mappingResponse.entity(categoryService.readCategoryById(id));
+    public ResponseEntity<Category> readById(@PathVariable Long id, Authentication authentication){
+        return mappingResponse.entity(categoryService.readCategoryById(id, authentication));
     }
 
     @GetMapping("/project/{id}")
     public ResponseEntity<PageDataDTO<Category>> readAllCategoryByProjectId(
             @PathVariable Long id,
             @RequestParam(required = false,defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "10") int size
+            @RequestParam(required = false, defaultValue = "10") int size,
+            Authentication authentication
     ){
-        return mappingResponse.listEntity(pageData.pageDataDTO(categoryService.readAllCategoryByProjectId(id,PageRequest.of(page,size))));
+        return mappingResponse.listEntity(pageData.pageDataDTO(categoryService.readAllCategoryByProjectId(id,PageRequest.of(page,size),authentication)));
     }
 
 //    @PutMapping
@@ -54,13 +56,13 @@ public class CategoryController {
 //    }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Category> updatePartInfo(@PathVariable Long id, @RequestBody CategoryDTO dto){
-        return mappingResponse.entity(categoryService.updatePartInfoForCategory(id,dto));
+    public ResponseEntity<Category> updatePartInfo(@PathVariable Long id, @RequestBody CategoryDTO dto, Authentication authentication){
+        return mappingResponse.entity(categoryService.updatePartInfoForCategory(id,dto, authentication));
     }
 
     @DeleteMapping("/{id}")
-    public HttpStatus deleteCategory(@PathVariable Long id){
-        categoryService.deleteCategory(id);
+    public HttpStatus deleteCategory(@PathVariable Long id, Authentication authentication){
+        categoryService.deleteCategory(id, authentication);
         return HttpStatus.OK;
     }
 }

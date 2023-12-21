@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,8 +23,8 @@ public class ProjectController {
     private final PageData<Project> pageData;
 
     @PostMapping
-    public ResponseEntity<Project> create(@RequestBody ProjectDTO dto){
-        return mappingResponse.entity(projectService.createProject(dto));
+    public ResponseEntity<Project> create(@RequestBody ProjectDTO dto, Authentication authentication){
+        return mappingResponse.entity(projectService.createProject(dto, authentication));
     }
 
     @GetMapping
@@ -35,8 +36,8 @@ public class ProjectController {
     }
 
     @GetMapping("/data/{id}")
-    public ResponseEntity<Project> readProjectById(@PathVariable Long id) {
-        return mappingResponse.entity(projectService.readProjectById(id));
+    public ResponseEntity<Project> readProjectById(@PathVariable Long id, Authentication authentication) {
+        return mappingResponse.entity(projectService.readProjectById(id, authentication));
     }
 
     @GetMapping("/user/{id}")
@@ -54,13 +55,13 @@ public class ProjectController {
 //    }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Project> updatePartInfo(@PathVariable Long id, @RequestBody ProjectDTO dto){
-        return mappingResponse.entity(projectService.updatePartInfoForProject(id, dto));
+    public ResponseEntity<Project> updatePartInfo(@PathVariable Long id, @RequestBody ProjectDTO dto, Authentication authentication){
+        return mappingResponse.entity(projectService.updatePartInfoForProject(id, dto, authentication));
     }
 
     @DeleteMapping("/{id}")
-    public HttpStatus delete(@PathVariable Long id){
-        projectService.deleteProject(id);
+    public HttpStatus delete(@PathVariable Long id, Authentication authentication){
+        projectService.deleteProject(id, authentication);
         return HttpStatus.OK;
     }
 }

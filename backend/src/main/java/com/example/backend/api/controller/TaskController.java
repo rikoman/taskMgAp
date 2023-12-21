@@ -37,17 +37,17 @@ public class TaskController {
         return mappingResponse.listEntity(pageData.pageDataDTO(taskService.readAllTask(PageRequest.of(page, size))));
     }
 
-    @GetMapping("/false")
-    public ResponseEntity<PageDataDTO<Task>> readAllTaskByStatusFalse(
-            @RequestParam(required = false,defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "10") int size
-    ){
-        return mappingResponse.listEntity(pageData.pageDataDTO(taskService.readAllTaskByStatusFalse(PageRequest.of(page, size))));
-    }
+//    @GetMapping("/false")
+//    public ResponseEntity<PageDataDTO<Task>> readAllTaskByStatusFalse(
+//            @RequestParam(required = false,defaultValue = "0") int page,
+//            @RequestParam(required = false, defaultValue = "10") int size
+//    ){
+//        return mappingResponse.listEntity(pageData.pageDataDTO(taskService.readAllTaskByStatusFalse(PageRequest.of(page, size))));
+//    }
 
     @GetMapping("/data/{id}")
-    public ResponseEntity<Task> readTaskById(@PathVariable Long id){
-        return mappingResponse.entity(taskService.readTaskById(id));
+    public ResponseEntity<Task> readTaskById(@PathVariable Long id,Authentication authentication){
+        return mappingResponse.entity(taskService.readTaskById(id,authentication));
     }
 
     @GetMapping("/category/{id}")
@@ -56,9 +56,10 @@ public class TaskController {
             @RequestParam String status,
             @RequestParam String priority,
             @RequestParam(required = false,defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "10") int size
+            @RequestParam(required = false, defaultValue = "10") int size,
+            Authentication authentication
     ){
-        return mappingResponse.listEntity(pageData.pageDataDTO(taskService.readAllTaskByCategoryId(id,status,priority,PageRequest.of(page,size))));
+        return mappingResponse.listEntity(pageData.pageDataDTO(taskService.readAllTaskByCategoryId(id,status,priority,PageRequest.of(page,size),authentication)));
     }
 
     @GetMapping("/project/{id}")
@@ -67,9 +68,10 @@ public class TaskController {
             @RequestParam String status,
             @RequestParam String priority,
             @RequestParam(required = false,defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "10") int size
+            @RequestParam(required = false, defaultValue = "10") int size,
+            Authentication authentication
     ){
-        return mappingResponse.listEntity(pageData.pageDataDTO(taskService.readAllTaskByProjectId(id,status,priority,PageRequest.of(page, size))));
+        return mappingResponse.listEntity(pageData.pageDataDTO(taskService.readAllTaskByProjectId(id,status,priority,PageRequest.of(page, size),authentication)));
     }
 
 //    @PutMapping
@@ -83,8 +85,8 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    public HttpStatus deleteTask(@PathVariable Long id){
-        taskService.deleteTask(id);
+    public HttpStatus deleteTask(@PathVariable Long id, Authentication authentication){
+        taskService.deleteTask(id,authentication);
         return HttpStatus.OK;
     }
 }
