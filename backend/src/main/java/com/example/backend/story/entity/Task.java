@@ -56,7 +56,7 @@ public class Task implements Serializable {
     private User author;
     @OneToMany(mappedBy = "task", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "executor_id")
     @NotNull(message = "executor not must empty")
     private User executor;
