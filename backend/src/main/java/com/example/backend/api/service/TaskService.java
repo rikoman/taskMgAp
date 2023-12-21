@@ -161,6 +161,7 @@ public class TaskService {
             if (dto.getDescription() != null) existTask.setDescription(dto.getDescription());
             if (dto.getPriority() != null) existTask.setPriority(dto.getPriority());
             if (dto.getStatus() != null) existTask.setStatus(dto.getStatus());
+            if(dto.getDate() != null) existTask.setDate(dto.getDate());
             if (dto.getProjectId() != null) {
                 Project existProject = projectService.readProjectById(dto.getProjectId(),authentication);
                 existTask.setProject(existProject);
