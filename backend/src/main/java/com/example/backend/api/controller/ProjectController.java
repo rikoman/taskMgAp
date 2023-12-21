@@ -44,9 +44,10 @@ public class ProjectController {
     public ResponseEntity<PageDataDTO<Project>> readAllProjectByUserId(
             @PathVariable Long id,
             @RequestParam(required = false,defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "10") int size
+            @RequestParam(required = false, defaultValue = "10") int size,
+            Authentication authentication
     ){
-        return mappingResponse.listEntity(pageData.pageDataDTO(projectService.readAllProjectByUserId(id,PageRequest.of(page,size))));
+        return mappingResponse.listEntity(pageData.pageDataDTO(projectService.readAllProjectByUserId(id,PageRequest.of(page,size),authentication)));
     }
 
 //    @PutMapping
@@ -55,7 +56,11 @@ public class ProjectController {
 //    }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Project> updatePartInfo(@PathVariable Long id, @RequestBody ProjectDTO dto, Authentication authentication){
+    public ResponseEntity<Project> updatePartInfo(
+            @PathVariable Long id,
+            @RequestBody ProjectDTO dto,
+            Authentication authentication
+    ){
         return mappingResponse.entity(projectService.updatePartInfoForProject(id, dto, authentication));
     }
 

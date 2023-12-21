@@ -64,8 +64,11 @@ public class ProjectService {
 
     @Transactional
 //    @Cacheable(cacheNames = "projectsByUserId", key = "#id")
-    public Page<Project> readAllProjectByUserId(Long id,PageRequest pageRequest){
-        userService.readUserById(id);
+    public Page<Project> readAllProjectByUserId(Long id,PageRequest pageRequest,Authentication authentication){
+        User projectUser = userService.readUserById(id);
+        if(!projectUser.getId().equals(customUserPrincipal.getUserDetails(authentication).getId())){
+            throw new BadRequestException("Вы не можете просматривать чужие задачи");
+        }
         return projectRepository.findByUsersId(id,pageRequest);
     }
 
