@@ -1,12 +1,13 @@
 package com.example.backend.api.controller;
 
-import com.example.backend.story.DTO.CategoryDTO;
-import com.example.backend.api.service.CategoryService;
+import com.example.backend.api.service.ProjectService;
 import com.example.backend.api.service.UserService;
+import com.example.backend.story.entity.Category;
 import com.example.backend.story.entity.Project;
 import com.example.backend.story.enums.ERole;
 import com.example.backend.story.entity.Role;
 import com.example.backend.story.entity.User;
+import com.example.backend.story.repository.CategoryRepository;
 import com.example.backend.story.repository.ProjectRepository;
 import com.example.backend.story.repository.RoleRepository;
 import com.example.backend.story.repository.UserRepository;
@@ -16,6 +17,7 @@ import com.example.backend.security.pojo.LoginRequest;
 import com.example.backend.security.pojo.MessageResponse;
 import com.example.backend.security.pojo.SignupRequest;
 import com.example.backend.security.service.UserDetailsImpl;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,11 +28,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -42,10 +42,11 @@ public class AuthController {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
-    private final CategoryService categoryService;
+    private final CategoryRepository categoryRepository;
     private final UserService userService;
     private final ProjectRepository projectRepository;
 
+    @Transactional
     @PostMapping("/signin")
     public ResponseEntity<?> authUser(@RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager
@@ -68,6 +69,7 @@ public class AuthController {
                 roles));
     }
 
+    @Transactional
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
         if (userRepository.existsByUsername(signupRequest.getUsername())) {
@@ -126,31 +128,32 @@ public class AuthController {
                 .users(userService.readAllUserByIds(Collections.singletonList(id)))
                 .build();
 
-        projectRepository.save(project);
-        createCategory(project.getId());
+        Project savedProject = projectRepository.save(project);
+        createCategory(savedProject.getId());
     }
 
     private void createCategory(Long id){
-        CategoryDTO categoryToDay = CategoryDTO.builder()
+        Project existProject = projectRepository.findById(id).orElseThrow();
+        Category categoryToDay = Category.builder()
                 .title("Задачи на сегодня")
                 .description("В данной категории будут отобразаться задачи предназначенные на текущую дату")
-                .projectId(id)
+                .project(existProject)
                 .build();
 
-        CategoryDTO categoryFuture = CategoryDTO.builder()
+        Category categoryFuture = Category.builder()
                 .title("Задачи на будущее")
                 .description("В данной категории будут отобразаться задачи предназначенные на будущую дату")
-                .projectId(id)
+                .project(existProject)
                 .build();
 
-        CategoryDTO categoryOverDue = CategoryDTO.builder()
+        Category categoryOverDue = Category.builder()
                 .title("Задачи на прошедшие дни")
                 .description("В данной категории будут отобразаться задачи прошедших дней")
-                .projectId(id)
+                .project(existProject)
                 .build();
 
-        categoryService.createCategory(categoryToDay);
-        categoryService.createCategory(categoryFuture);
-        categoryService.createCategory(categoryOverDue);
+        categoryRepository.save(categoryToDay);
+        categoryRepository.save(categoryFuture);
+        categoryRepository.save(categoryOverDue);
     }
 }
