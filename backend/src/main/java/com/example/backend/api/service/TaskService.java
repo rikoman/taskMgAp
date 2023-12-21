@@ -11,6 +11,7 @@ import com.example.backend.story.entity.User;
 import com.example.backend.story.enums.Priority;
 import com.example.backend.story.enums.Status;
 import com.example.backend.story.repository.TaskRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -32,7 +33,8 @@ public class TaskService {
     private final UserService userService;
     private final CustomUserPrincipal customUserPrincipal;
 
-    @CacheEvict(cacheNames = {"tasks", "tasksByStatusFalse", "tasksByProjectId", "taskByCategoryId" }, allEntries = true)
+//    @CacheEvict(cacheNames = {"tasks", "tasksByStatusFalse", "tasksByProjectId", "taskByCategoryId" }, allEntries = true)
+    @Transactional
     public Task createTask(TaskDTO dto, Authentication authentication){
         if(dto.getProjectId() == null && dto.getCategoryId() == null && dto.getParentId() == null){
             throw new BadRequestException("Invalid request");
@@ -48,9 +50,9 @@ public class TaskService {
 
         User executor = dto.getExecutorId() !=null ? userService.readUserById(dto.getExecutorId()):userService.readUserById(getUserIdPrincipal(authentication));
 
-        Category category = dto.getCategoryId() != null ? categoryService.readCategoryById(dto.getCategoryId()) : null;
-        Project project = dto.getProjectId() != null ? projectService.readProjectById(dto.getProjectId()) : null;
-        Task parentTask = dto.getParentId() != null ? readTaskById(dto.getParentId()) : null;
+        Category category = dto.getCategoryId() != null ? categoryService.readCategoryById(dto.getCategoryId(),authentication) : null;
+        Project project = dto.getProjectId() != null ? projectService.readProjectById(dto.getProjectId(),authentication) : null;
+        Task parentTask = dto.getParentId() != null ? readTaskById(dto.getParentId(),authentication) : null;
 
         Task task = Task.builder()
                 .title(dto.getTitle())
@@ -68,28 +70,41 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-    @Cacheable(cacheNames = "tasks")
+//    @Cacheable(cacheNames = "tasks")
+    @Transactional
     public Page<Task> readAllTask(PageRequest pageRequest){
         return taskRepository.findAll(pageRequest);
     }
 
-    @Cacheable(cacheNames = "tasksByStatusFalse")
-    public Page<Task> readAllTaskByStatusFalse(PageRequest pageRequest){
-        return taskRepository.findByStatusFalse(pageRequest);
+//    @Cacheable(cacheNames = "tasksByStatusFalse")
+//    public Page<Task> readAllTaskByStatusFalse(PageRequest pageRequest){
+//        return taskRepository.findByStatusFalse(pageRequest);
+//    }
+
+//    @Cacheable(cacheNames = "task", key = "#id")
+    @Transactional
+    public Task readTaskById(Long id, Authentication authentication){
+        Task existTask = taskRepository.findById(id).orElseThrow(()-> new NotFoundException(String.format("task with /%s/ id doesn' found",id)));
+        if(existTask.getProject()!=null){
+            projectService.readProjectById(existTask.getProject().getId(),authentication);
+        }
+        if(existTask.getCategory()!=null){
+            categoryService.readCategoryById(existTask.getCategory().getId(),authentication);
+        }
+        if(existTask.getParent()!=null){
+            readTaskById(existTask.getParent().getId(),authentication);
+        }
+        return existTask;
     }
 
-    @Cacheable(cacheNames = "task", key = "#id")
-    public Task readTaskById(Long id){
-        return taskRepository.findById(id).orElseThrow(()-> new NotFoundException(String.format("task with /%s/ id doesn' found",id)));
-    }
-
-    @Cacheable(cacheNames = "tasksByCategoryId", key = "#id")
-    public Page<Task> readAllTaskByCategoryId(Long id, String status, String priority, PageRequest pageRequest){
+//    @Cacheable(cacheNames = "tasksByCategoryId", key = "#id")
+    @Transactional
+    public Page<Task> readAllTaskByCategoryId(Long id, String status, String priority, PageRequest pageRequest, Authentication authentication){
         try{
             Status statusEnum = Status.valueOf(status.toUpperCase());
             Priority priorityEnum = Priority.valueOf(priority.toUpperCase());
 
-            categoryService.readCategoryById(id);
+            categoryService.readCategoryById(id, authentication);
 
             return taskRepository.findByCategoryIdAndStatusAndPriority(id,statusEnum,priorityEnum,pageRequest);
         }
@@ -98,13 +113,14 @@ public class TaskService {
         }
     }
 
-    @Cacheable(cacheNames = "tasksByProjectId", key = "#id")
-    public Page<Task> readAllTaskByProjectId(Long id,String status, String priority,PageRequest pageRequest) {
+//    @Cacheable(cacheNames = "tasksByProjectId", key = "#id")
+    @Transactional
+    public Page<Task> readAllTaskByProjectId(Long id,String status, String priority,PageRequest pageRequest, Authentication authentication) {
         try{
             Status statusEnum = Status.valueOf(status.toUpperCase());
             Priority priorityEnum = Priority.valueOf(priority.toUpperCase());
 
-            projectService.readProjectById(id);
+            projectService.readProjectById(id, authentication);
 
             return taskRepository.findByProjectIdAndStatusAndPriority(id,statusEnum,priorityEnum,pageRequest);
         }
@@ -131,10 +147,11 @@ public class TaskService {
 //        return taskRepository.save(task);
 //    }
 
-    @Caching(evict = { @CacheEvict(cacheNames = "task", key = "#task.id"),
-                       @CacheEvict(cacheNames = {"tasks", "tasksByStatusFalse", "tasksByProjectId", "taskByCategoryId" }, allEntries = true)})
+//    @Caching(evict = { @CacheEvict(cacheNames = "task", key = "#task.id"),
+//                       @CacheEvict(cacheNames = {"tasks", "tasksByStatusFalse", "tasksByProjectId", "taskByCategoryId" }, allEntries = true)})
+    @Transactional
     public Task updatePartInfoForTask(Long id, TaskDTO dto,Authentication authentication){
-        Task existTask = readTaskById(id);
+        Task existTask = readTaskById(id, authentication);
 
         if(!existTask.getAuthor().getId().equals(getUserIdPrincipal(authentication)) && !existTask.getExecutor().getId().equals(getUserIdPrincipal(authentication))){
             throw new BadRequestException("Вы не являетесь автором или исполнителем");
@@ -145,15 +162,15 @@ public class TaskService {
             if (dto.getPriority() != null) existTask.setPriority(dto.getPriority());
             if (dto.getStatus() != null) existTask.setStatus(dto.getStatus());
             if (dto.getProjectId() != null) {
-                Project existProject = projectService.readProjectById(dto.getProjectId());
+                Project existProject = projectService.readProjectById(dto.getProjectId(),authentication);
                 existTask.setProject(existProject);
             }
             if (dto.getCategoryId() != null) {
-                Category existCategory = categoryService.readCategoryById(dto.getCategoryId());
+                Category existCategory = categoryService.readCategoryById(dto.getCategoryId(), authentication);
                 existTask.setCategory(existCategory);
             }
             if (dto.getParentId() != null) {
-                Task existParentTask = readTaskById(dto.getParentId());
+                Task existParentTask = readTaskById(dto.getParentId(),authentication);
                 existTask.setParent(existParentTask);
             }
         }
@@ -166,10 +183,11 @@ public class TaskService {
         return taskRepository.save(existTask);
     }
 
-    @Caching(evict = { @CacheEvict(cacheNames = "task", key = "#id"),
-                       @CacheEvict(cacheNames = {"tasks", "tasksByStatusFalse", "tasksByProjectId", "taskByCategoryId" }, allEntries = true)})
-    public void deleteTask(Long id){
-        readTaskById(id);
+//    @Caching(evict = { @CacheEvict(cacheNames = "task", key = "#id"),
+//                       @CacheEvict(cacheNames = {"tasks", "tasksByStatusFalse", "tasksByProjectId", "taskByCategoryId" }, allEntries = true)})
+    @Transactional
+    public void deleteTask(Long id, Authentication authentication){
+        readTaskById(id,authentication);
         taskRepository.deleteById(id);
     }
 

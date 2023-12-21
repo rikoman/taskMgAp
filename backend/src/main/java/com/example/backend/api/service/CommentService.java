@@ -8,6 +8,7 @@ import com.example.backend.story.entity.Comment;
 import com.example.backend.story.entity.Task;
 import com.example.backend.story.repository.CommentRepository;
 import com.example.backend.story.repository.TaskRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -29,15 +30,16 @@ public class CommentService {
     private final UserService userService;
     private final CustomUserPrincipal customUserPrincipal;
 
-    @CacheEvict(cacheNames = {"comments", "commentsByTaskId"}, allEntries = true)
+    @Transactional
+//    @CacheEvict(cacheNames = {"comments", "commentsByTaskId"}, allEntries = true)
     public Comment createComment(CommentDTO dto, Authentication authentication){
-        Task task = taskService.readTaskById(dto.getTaskId());
+        Task task = taskService.readTaskById(dto.getTaskId(),authentication);
 
         Comment comment = Comment.builder()
                 .content(dto.getContent())
                 .task(task)
                 .datePublication(LocalDateTime.now())
-                .author(userService.readUserById(customUserPrincipal.getUserDetails(authentication).getId()))
+                .author(userService.readUserById(getUserIdPrincipal(authentication)))
                 .build();
 
         Comment savedComment = commentRepository.save(comment);
@@ -49,30 +51,48 @@ public class CommentService {
         return savedComment;
     }
 
-    @Cacheable(cacheNames = "comments")
+    @Transactional
+//    @Cacheable(cacheNames = "comments")
     public Page<Comment> readAllComment(PageRequest pageRequest){
         return commentRepository.findAll(pageRequest);
     }
 
-    @Caching(evict = { @CacheEvict(cacheNames = "comment", key = "#comment.id"),
-            @CacheEvict(cacheNames = {"comments", "commentsByTaskId"}, allEntries = true) })
-    public Comment updatePartInfoForComment(Long id,CommentDTO dto){
-        Comment existComment = findByIdComment(id);
+    @Transactional
+//    @Caching(evict = { @CacheEvict(cacheNames = "comment", key = "#comment.id"),
+//            @CacheEvict(cacheNames = {"comments", "commentsByTaskId"}, allEntries = true) })
+    public Comment updatePartInfoForComment(Long id,CommentDTO dto,Authentication authentication){
+        Comment existComment = findByIdComment(id,authentication);
 
-        if(dto.getContent() != null){
-            existComment.setContent(dto.getContent());
+        if(existComment.getAuthor().getId().equals(getUserIdPrincipal(authentication))){
+            if(dto.getContent() != null){
+                existComment.setContent(dto.getContent());
+            }
+        }else {
+            throw new BadRequestException("Только автор может редактировать комментарий");
         }
         return commentRepository.save(existComment);
     }
 
-    @Caching(evict = { @CacheEvict(cacheNames = "comment", key = "#id"),
-                       @CacheEvict(cacheNames = {"comments", "commentsByTaskId"}, allEntries = true) })
-    public void deleteComment(Long id){
-        findByIdComment(id);
-        commentRepository.deleteById(id);
+    @Transactional
+//    @Caching(evict = { @CacheEvict(cacheNames = "comment", key = "#id"),
+//                       @CacheEvict(cacheNames = {"comments", "commentsByTaskId"}, allEntries = true) })
+    public void deleteComment(Long id, Authentication authentication){
+        Comment existComment = findByIdComment(id,authentication);
+        if(existComment.getAuthor().getId().equals(getUserIdPrincipal(authentication))){
+            commentRepository.deleteById(id);
+        }
+        else {
+            throw new BadRequestException("Только автор может удалять комментарий");
+        }
     }
 
-    private Comment findByIdComment(Long id){
-        return commentRepository.findById(id).orElseThrow(()-> new NotFoundException(String.format("comment with /%s/ id doesn' found",id)));
+    private Comment findByIdComment(Long id, Authentication authentication){
+        Comment existComment = commentRepository.findById(id).orElseThrow(()-> new NotFoundException(String.format("comment with /%s/ id doesn' found",id)));
+        taskService.readTaskById(existComment.getTask().getId(),authentication);
+        return existComment;
+    }
+
+    private Long getUserIdPrincipal(Authentication authentication){
+        return customUserPrincipal.getUserDetails(authentication).getId();
     }
 }
